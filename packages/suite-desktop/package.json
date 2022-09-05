@@ -216,6 +216,7 @@
         "@suite-common/suite-utils": "*",
         "@trezor/connect": "9.0.2",
         "@trezor/connect-common": "*",
+        "@trezor/ipc-proxy": "*",
         "@trezor/request-manager": "*",
         "@trezor/suite-desktop-api": "*",
         "@trezor/urls": "*",
