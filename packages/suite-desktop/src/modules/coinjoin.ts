@@ -6,6 +6,7 @@ import { app, ipcMain } from 'electron';
 import { createIpcProxyHandler, IpcProxyHandlerOptions } from '@trezor/ipc-proxy';
 import { CoinjoinBackend, CoinjoinClient } from '@trezor/coinjoin';
 import type { Module } from './index';
+import CoinjoinProcess from '../libs/processes/CoinjoinProcess';
 
 const SERVICE_NAME = '@trezor/coinjoin';
 
@@ -14,6 +15,8 @@ const init: Module = ({ mainWindow }) => {
 
     const backends: CoinjoinBackend[] = [];
     const clients: CoinjoinClient[] = [];
+
+    const coinjoin = new CoinjoinProcess();
 
     logger.debug(SERVICE_NAME, `Starting service`);
 
@@ -49,11 +52,16 @@ const init: Module = ({ mainWindow }) => {
                     if (method === 'enable') {
                         logger.debug(SERVICE_NAME, `CoinjoinClient enable ${params}`);
                         const response = await client.enable();
-                        // TODO: start coinjoin middleware binary
-                        return response;
+                        try {
+                            await coinjoin.start();
+                            return response;
+                        } catch (err) {
+                            logger.error('coinjoin', `Start failed: ${err.message}`);
+                        }
+                    } else {
+                        // needs type casting
+                        return (client[method] as any)(...params); // bind method to instance context
                     }
-                    // needs type casting
-                    return (client[method] as any)(...params); // bind method to instance context
                 },
                 onAddListener: (eventName, listener) => {
                     logger.debug(SERVICE_NAME, `CoinjoinClient add listener ${eventName}`);
@@ -83,6 +91,8 @@ const init: Module = ({ mainWindow }) => {
         const dispose = () => {
             unregisterBackendProxy();
             unregisterClientProxy();
+            logger.info('coinjoin', 'Stopping (app quit)');
+            coinjoin.stop();
         };
 
         app.on('before-quit', dispose);
