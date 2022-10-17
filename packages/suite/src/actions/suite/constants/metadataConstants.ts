@@ -10,6 +10,7 @@ export const ACCOUNT_LOADED = '@metadata/account-loaded';
 export const ACCOUNT_ADD = '@metadata/account-add';
 export const SET_EDITING = '@metadata/set-editing';
 export const SET_INITIATING = '@metadata/set-initiating';
+export const SET_DATA = '@metadata/set-data';
 
 // todo: use in metadataActions, currently migration is not implemented yet
 export const METADATA_VERSION = '2.0.0';

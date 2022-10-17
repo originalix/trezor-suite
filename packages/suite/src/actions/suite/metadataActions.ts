@@ -48,6 +48,13 @@ export type MetadataAction =
           type: typeof METADATA.WALLET_LOADED | typeof METADATA.WALLET_ADD;
           payload: { deviceState: string; walletLabel?: string };
       }
+    | {
+          type: typeof METADATA.SET_DATA;
+          payload: {
+              provider: MetadataProviderType;
+              data: Record<string, string>;
+          };
+      }
     | ReturnType<typeof setAccountLoaded>
     | ReturnType<typeof setAccountAdd>;
 
@@ -309,6 +316,17 @@ export const fetchMetadata =
                         walletLabel: json.walletLabel,
                     },
                 });
+
+                dispatch({
+                    type: METADATA.SET_DATA,
+                    payload: {
+                        provider: provider.type,
+                        data: {
+                            [device.metadata.fileName]: json,
+                        },
+                    },
+                });
+
                 resolve();
             });
         });
@@ -358,6 +376,15 @@ export const fetchMetadata =
                     },
                 }),
             );
+            dispatch({
+                type: METADATA.SET_DATA,
+                payload: {
+                    provider: provider.type,
+                    data: {
+                        [account.metadata.fileName]: json,
+                    },
+                },
+            });
         });
 
         const promises = [deviceFileContentP, ...accountPromises];

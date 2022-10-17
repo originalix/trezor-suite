@@ -160,6 +160,14 @@ export type DeviceMetadata =
           walletLabel?: string;
       };
 
+type Data = {
+    [P in MetadataProviderType]?: Record<
+        // filename
+        string,
+        // stringified file content
+        string
+    >;
+};
 export interface MetadataState {
     enabled: boolean; // global for all devices
     provider?: MetadataProvider;
@@ -168,6 +176,8 @@ export interface MetadataState {
     // field shall hold default value for which user may add metadata (address, txId, etc...);
     editing?: string;
     initiating?: boolean;
+    // decrypted content of data per provider
+    data?: Data;
 }
 
 export type OAuthServerEnvironment = 'production' | 'staging' | 'localhost';
