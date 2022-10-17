@@ -337,6 +337,8 @@ export const fetchMetadata =
 
         const accountPromises = accounts.map(async account => {
             if (!provider) return; // ts
+            console.log('fetching labeling for account: ', account.path);
+
             const response = await provider.getFileContent(account.metadata.fileName);
 
             if (!response.success) {
@@ -360,10 +362,13 @@ export const fetchMetadata =
                     //     TODO: migration
                     // }
                 } catch (err) {
+                    console.error('error fetching labeling for account: ', account.path, err);
                     const error = provider.error('OTHER_ERROR', err.message);
                     return dispatch(handleProviderError(error, ProviderErrorAction.LOAD));
                 }
             }
+
+            console.log('fetched labeling for account: ', account.path, json);
 
             dispatch(
                 setAccountLoaded({
@@ -429,6 +434,8 @@ export const setAccountMetadataKey =
                 account.metadata.key,
             );
             const fileName = metadataUtils.deriveFilename(metaKey);
+            console.log('account', account.path);
+            console.log('filename', fileName);
             const aesKey = metadataUtils.deriveAesKey(metaKey);
             return { ...account, metadata: { ...account.metadata, fileName, aesKey } };
         } catch (error) {
