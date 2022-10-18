@@ -297,13 +297,22 @@ export const fetchMetadata =
                 const json = { walletLabel: '' };
                 if (result.payload) {
                     try {
-                        Object.assign(
-                            json,
-                            metadataUtils.decrypt(
-                                metadataUtils.arrayBufferToBuffer(result.payload),
-                                device.metadata.aesKey,
-                            ),
+                        const decrypted = metadataUtils.decrypt(
+                            metadataUtils.arrayBufferToBuffer(result.payload),
+                            device.metadata.aesKey,
                         );
+
+                        Object.assign(json, decrypted);
+
+                        dispatch({
+                            type: METADATA.SET_DATA,
+                            payload: {
+                                provider: provider.type,
+                                data: {
+                                    [device.metadata.fileName]: decrypted,
+                                },
+                            },
+                        });
                     } catch (err) {
                         const error = provider.error('OTHER_ERROR', err.message);
                         return reject(error);
@@ -314,16 +323,6 @@ export const fetchMetadata =
                     payload: {
                         deviceState,
                         walletLabel: json.walletLabel,
-                    },
-                });
-
-                dispatch({
-                    type: METADATA.SET_DATA,
-                    payload: {
-                        provider: provider.type,
-                        data: {
-                            [device.metadata.fileName]: json,
-                        },
                     },
                 });
 
@@ -351,16 +350,25 @@ export const fetchMetadata =
                 try {
                     // we found associated metadata file for given account, decrypt it
                     // and save its metadata into reducer;
-                    Object.assign(
-                        json,
-                        metadataUtils.decrypt(
-                            metadataUtils.arrayBufferToBuffer(response.payload),
-                            account.metadata.aesKey,
-                        ),
+                    console.log('decrypting filename', account.metadata.fileName);
+                    const decrypted = metadataUtils.decrypt(
+                        metadataUtils.arrayBufferToBuffer(response.payload),
+                        account.metadata.aesKey,
                     );
+                    Object.assign(json, decrypted);
                     // if (json.version === '1.0.0') {
                     //     TODO: migration
                     // }
+
+                    dispatch({
+                        type: METADATA.SET_DATA,
+                        payload: {
+                            provider: provider.type,
+                            data: {
+                                [account.metadata.fileName]: decrypted,
+                            },
+                        },
+                    });
                 } catch (err) {
                     console.error('error fetching labeling for account: ', account.path, err);
                     const error = provider.error('OTHER_ERROR', err.message);
@@ -605,6 +613,7 @@ export const addAccountMetadata =
             return false;
         }
 
+        console.log('encrypting filename', account.metadata.fileName);
         // todo: can't this throw? heh?
         const encrypted = await metadataUtils.encrypt(
             {
@@ -617,6 +626,7 @@ export const addAccountMetadata =
         );
 
         const result = await provider.setFileContent(account.metadata.fileName, encrypted);
+        console.log('result', result);
         if (!result.success) {
             dispatch(handleProviderError(result, ProviderErrorAction.SAVE));
             return false;
