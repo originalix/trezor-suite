@@ -302,8 +302,6 @@ export const fetchMetadata =
                             device.metadata.aesKey,
                         );
 
-                        Object.assign(json, decrypted);
-
                         dispatch({
                             type: METADATA.SET_DATA,
                             payload: {
@@ -313,6 +311,7 @@ export const fetchMetadata =
                                 },
                             },
                         });
+                        Object.assign(json, decrypted);
                     } catch (err) {
                         const error = provider.error('OTHER_ERROR', err.message);
                         return reject(error);
@@ -355,10 +354,7 @@ export const fetchMetadata =
                         metadataUtils.arrayBufferToBuffer(response.payload),
                         account.metadata.aesKey,
                     );
-                    Object.assign(json, decrypted);
-                    // if (json.version === '1.0.0') {
-                    //     TODO: migration
-                    // }
+                    console.log('fetched labeling for account: ', account.path, decrypted);
 
                     dispatch({
                         type: METADATA.SET_DATA,
@@ -369,14 +365,17 @@ export const fetchMetadata =
                             },
                         },
                     });
+
+                    Object.assign(json, decrypted);
+                    // if (json.version === '1.0.0') {
+                    //     TODO: migration
+                    // }
                 } catch (err) {
                     console.error('error fetching labeling for account: ', account.path, err);
                     const error = provider.error('OTHER_ERROR', err.message);
                     return dispatch(handleProviderError(error, ProviderErrorAction.LOAD));
                 }
             }
-
-            console.log('fetched labeling for account: ', account.path, json);
 
             dispatch(
                 setAccountLoaded({
@@ -389,15 +388,6 @@ export const fetchMetadata =
                     },
                 }),
             );
-            dispatch({
-                type: METADATA.SET_DATA,
-                payload: {
-                    provider: provider.type,
-                    data: {
-                        [account.metadata.fileName]: json,
-                    },
-                },
-            });
         });
 
         const promises = [deviceFileContentP, ...accountPromises];
@@ -442,8 +432,10 @@ export const setAccountMetadataKey =
                 account.metadata.key,
             );
             const fileName = metadataUtils.deriveFilename(metaKey);
+
             console.log('account', account.path);
             console.log('filename', fileName);
+
             const aesKey = metadataUtils.deriveAesKey(metaKey);
             return { ...account, metadata: { ...account.metadata, fileName, aesKey } };
         } catch (error) {

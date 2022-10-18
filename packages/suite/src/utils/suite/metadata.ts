@@ -80,6 +80,7 @@ export const encrypt = async (input: Record<string, any>, aesKey: string | Buffe
 };
 
 export const decrypt = (input: Buffer, key: string | Buffer) => {
+    console.log('decrypt!!!', input);
     if (typeof key === 'string') {
         key = Buffer.from(key, 'hex');
     }
