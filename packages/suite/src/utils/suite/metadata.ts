@@ -64,6 +64,7 @@ export const arrayBufferToBuffer = (ab: ArrayBuffer) => {
 };
 
 export const encrypt = async (input: Record<string, any>, aesKey: string | Buffer) => {
+    console.log('encrypting!!!', input);
     if (typeof aesKey === 'string') {
         aesKey = Buffer.from(aesKey, 'hex');
     }
@@ -97,7 +98,9 @@ export const decrypt = (input: Buffer, key: string | Buffer) => {
 
     const res = Buffer.concat([start, end]);
     const stringified = res.toString('utf8');
-    return JSON.parse(stringified);
+    const result = JSON.parse(stringified);
+    console.log('decrypted', result);
+    return result;
 };
 
 /**

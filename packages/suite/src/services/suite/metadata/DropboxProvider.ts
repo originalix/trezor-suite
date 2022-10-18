@@ -102,6 +102,8 @@ class DropboxProvider extends AbstractMetadataProvider {
             const { result } = await this.client.filesSearchV2({
                 query: `${file}.mtdt`,
             });
+            console.log('query', file);
+            console.log('result', result);
 
             // this is basically impossible to happen (maybe QA team might get there) after few years of testing
             if (result.has_more) {
@@ -123,6 +125,9 @@ class DropboxProvider extends AbstractMetadataProvider {
                         'metadata' in m.metadata &&
                         m.metadata.metadata.path_lower === `/apps/trezor/${file}.mtdt`,
                 );
+
+                console.log('match', match);
+                console.log('matchLegacy', matchLegacy);
 
                 // fail if it is in neither
                 if (!match && !matchLegacy) return this.ok(undefined);
