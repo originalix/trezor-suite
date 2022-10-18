@@ -30,7 +30,6 @@ const metadataReducer = (state = initialState, action: Action): MetadataState =>
                 draft.initiating = action.payload;
                 break;
             case METADATA.SET_DATA:
-                console.log(action.payload.provider);
                 // todo: not here probably, does't matter, so far only PoC
                 if (!draft.data) {
                     draft.data = {};
