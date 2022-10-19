@@ -1,44 +1,56 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import styled from 'styled-components';
 
 import { SectionItem, TextColumn } from '@suite-components/Settings';
 import { useSelector } from '@suite-hooks';
 import { MetadataState } from '@suite-common/metadata-types';
 import { DropZone } from '@suite-components/DropZone';
-import { Button } from '@trezor/components';
+import { Button, Select } from '@trezor/components';
 import * as metadataUtils from '@suite-utils/metadata';
 import { Account } from 'suite-common/wallet-types/src';
-import { RequiredKey } from 'packages/type-utils/src';
+
+const LabelingViewer = styled.div`
+    display: flex;
+    flex-direction: column;
+`;
 
 const StyledPre = styled.pre`
     font-size: 10px;
 `;
 
-const InfoSection = styled.div`
-    margin: 8px 0;
-`;
-
 const DecodedSection = styled.div`
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     margin: 8px 0;
+    flex: 1;
 `;
 
 const DecodedItem = styled.div`
-    border: 1px dotted gray;
+    padding: 8px;
+    flex: 1;
+    max-width: 50%;
+    line-break: anywhere;
+    overflow: hidden;
+`;
+
+const DecodedItemTitle = styled.div`
+    margin-bottom: 4px;
+    font-size: 16px;
+    font-weight: 500;
 `;
 
 interface MetadataItemProps {
-    metadata: RequiredKey<MetadataState, 'provider' | 'data'>;
+    metadata: MetadataState;
     account: Account;
 }
+
 const MetadataItem = ({ metadata, account }: MetadataItemProps) => {
     const { fileName, aesKey } = account.metadata;
+    const [custom, setCustom] = useState(undefined);
 
     const onSelect = (file: File, setError: (msg: any) => void) => {
         const reader = new FileReader();
         reader.onload = () => {
-            console.log('eader.result', reader.result);
             try {
                 const decrypted = metadataUtils.decrypt(
                     // @ts-expect-error
@@ -58,39 +70,38 @@ const MetadataItem = ({ metadata, account }: MetadataItemProps) => {
         reader.readAsArrayBuffer(file);
     };
 
-    const [custom, setCustom] = useState(undefined);
+    if (!metadata.provider) return null;
 
     return (
-        <div>
-            <InfoSection>
-                {!metadata && <div>No labelling data found.</div>}
-                {metadata && <>Account path: {account.path}</>}
-            </InfoSection>
-            <DecodedSection>
-                <DecodedItem>
-                    <div>fetched from {metadata.provider.type}</div>
-                    {!metadata.data[metadata.provider.type] &&
-                        `No data for ${metadata.provider.type}`}
-                    {/* @ts-expect-error */}
-                    {metadata.data[metadata.provider.type][fileName] && (
-                        <StyledPre>
-                            {JSON.stringify(
-                                //@ts-expect-error
-                                metadata.data[metadata.provider.type][fileName],
-                                null,
-                                2,
-                            )}
-                        </StyledPre>
-                    )}
-                </DecodedItem>
-                <DecodedItem>
-                    <div>Insert local file</div>
-                    {!custom && <DropZone accept=".mtdt" icon="CSV" onSelect={onSelect} />}
-                    {custom && <StyledPre>{JSON.stringify(custom, null, 2)}</StyledPre>}
-                    {custom && <Button onClick={() => setCustom(undefined)}>Clear</Button>}
-                </DecodedItem>
-            </DecodedSection>
-        </div>
+        <DecodedSection>
+            <DecodedItem>
+                <DecodedItemTitle>Fetched from {metadata.provider.type}</DecodedItemTitle>
+                {!metadata.data?.[metadata.provider.type]?.[fileName] && 'No data found'}
+                {metadata.data?.[metadata.provider.type]?.[fileName] && (
+                    <StyledPre>
+                        {JSON.stringify(
+                            //@ts-expect-error
+                            metadata.data[metadata.provider.type][fileName],
+                            null,
+                            2,
+                        )}
+                    </StyledPre>
+                )}
+            </DecodedItem>
+            <DecodedItem>
+                <DecodedItemTitle>Compare with a local file</DecodedItemTitle>
+                {!custom && (
+                    <DropZone
+                        accept=".mtdt"
+                        icon="SEARCH"
+                        onSelect={onSelect}
+                        placeholder="Upload file"
+                    />
+                )}
+                {custom && <StyledPre>{JSON.stringify(custom, null, 2)}</StyledPre>}
+                {custom && <Button onClick={() => setCustom(undefined)}>Clear</Button>}
+            </DecodedItem>
+        </DecodedSection>
     );
 };
 
@@ -99,6 +110,15 @@ export const Metadata = () => {
         metadata: state.metadata,
         accounts: state.wallet.accounts,
     }));
+
+    const [selectedAccountPath, setSelectedAccountPath] = useState(undefined);
+    const selectedAccount = useMemo(() => {
+        return accounts.find(a => a.path === selectedAccountPath);
+    }, [accounts, selectedAccountPath]);
+
+    const getLabel = (a: Account) => {
+        return `${a.symbol} - ${a.path} - ${a.metadata.fileName}`;
+    };
 
     if (!metadata.enabled) {
         return (
@@ -111,18 +131,26 @@ export const Metadata = () => {
         );
     }
     return (
-        <>
-            {accounts.map(account => {
-                return (
-                    <SectionItem key={account.path}>
-                        <TextColumn
-                            title={account.metadata.fileName}
-                            // @ts-expect-error
-                            description={<MetadataItem metadata={metadata} account={account} />}
-                        />
-                    </SectionItem>
-                );
-            })}
-        </>
+        <SectionItem>
+            <LabelingViewer>
+                <Select
+                    onChange={(selected: any) => {
+                        setSelectedAccountPath(selected.value);
+                    }}
+                    value={{
+                        label: selectedAccount ? getLabel(selectedAccount) : 'Select account',
+                    }}
+                    isClearable={false}
+                    options={accounts.map(a => ({
+                        label: getLabel(a),
+                        value: a.path,
+                    }))}
+                    isClean
+                    hideTextCursor
+                />
+
+                {selectedAccount && <MetadataItem metadata={metadata} account={selectedAccount} />}
+            </LabelingViewer>
+        </SectionItem>
     );
 };
