@@ -1,0 +1,36 @@
+version: "3.9"
+services:
+  trezor-user-env-unix:
+    image: ghcr.io/trezor/trezor-user-env
+    environment:
+      - DISPLAY=$DISPLAY
+      - QT_X11_NO_MITSHM=1
+      - LOCAL_USER_ID=$LOCAL_USER_ID
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+
+  connect-run:
+    container_name: connect-run
+    extends:
+      service: suite-base
+      file: docker-compose.suite-base.yml
+    network_mode: service:trezor-user-env-unix
+    command: bash -c "cd packages/connect-examples/browser-inline-script && yarn serve"
+
+  test-run:
+    image: mcr.microsoft.com/playwright:focal
+    depends_on:
+      - trezor-user-env-unix
+      - connect-run
+    network_mode: service:trezor-user-env-unix
+    environment:
+      - DISPLAY=$DISPLAY
+      - HEADLESS=false
+      - PWDEBUG=1
+      - TEST_FILE=$TEST_FILE
+      - LOCAL_USER_ID=$LOCAL_USER_ID
+    working_dir: /trezor-suite
+    command: bash -c "npx playwright install && yarn workspace @trezor/connect-web test:e2e $TEST_FILE"
+    volumes:
+      - ../:/trezor-suite
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
