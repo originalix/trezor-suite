@@ -142,7 +142,7 @@ buck-out/
 *.jsbundle
 
 # Yarn 3
-.yarn/*
+**/.yarn/*
 .yarn/cache
 !.yarn/patches
 !.yarn/plugins
