@@ -71,7 +71,7 @@ const CoinmarketSavingsSetupContinue = (props: WithSelectedAccountLoadedProps) =
         fiatAmount,
         fiatCurrency,
         register,
-        errors,
+        formState: { errors },
         isWatchingKYCStatus,
         canConfirmSetup,
         account,
@@ -112,7 +112,7 @@ const CoinmarketSavingsSetupContinue = (props: WithSelectedAccountLoadedProps) =
                 control={control}
                 name="paymentFrequency"
                 defaultValue={savingsTrade?.paymentFrequency}
-                render={({ onChange, value }) => (
+                render={({ field: { onChange, value } }) => (
                     <FrequencyStyledSelectBar
                         onChange={onChange}
                         selectedOption={value}

@@ -7,7 +7,7 @@ import { useActions } from '@suite-hooks';
 import * as modalActions from '@suite-actions/modalActions';
 import { useCoinmarketExchangeOffersContext } from '@wallet-hooks/useCoinmarketExchangeOffers';
 import { getUnusedAddressFromAccount } from '@wallet-utils/coinmarket/coinmarketUtils';
-import type { UseFormMethods } from 'react-hook-form';
+import type { UseFormReturn } from 'react-hook-form';
 import type { Account } from '@wallet-types';
 
 const LogoWrapper = styled.div`
@@ -61,7 +61,7 @@ type FormState = {
     address?: string;
 };
 
-type Props = Pick<UseFormMethods<FormState>, 'setValue'> & {
+type Props = Pick<UseFormReturn<FormState>, 'setValue'> & {
     selectedAccountOption?: AccountSelectOption;
     setSelectedAccountOption: (o: AccountSelectOption) => void;
 };

@@ -231,7 +231,7 @@ const Inputs = () => {
             <Left>
                 <Input
                     noTopLabel
-                    innerRef={fiatInputRef}
+                    {...fiatInputRef}
                     onFocus={() => {
                         setActiveInput(fiatInput);
                     }}
@@ -249,7 +249,7 @@ const Inputs = () => {
                             control={control}
                             name={currencySelect}
                             defaultValue={defaultCurrency}
-                            render={({ onChange, value }) => (
+                            render={({ field: { onChange, value } }) => (
                                 <Select
                                     options={FIAT.currencies
                                         .filter(c => buyInfo?.supportedFiatCurrencies.has(c))
@@ -287,7 +287,7 @@ const Inputs = () => {
                     name={cryptoInput}
                     noTopLabel
                     maxLength={MAX_LENGTH.AMOUNT}
-                    innerRef={cryptoInputRef}
+                    {...cryptoInputRef}
                     bottomText={<InputError error={errors[cryptoInput]} />}
                     innerAddon={
                         <Controller
@@ -297,7 +297,7 @@ const Inputs = () => {
                                 value: uppercaseSymbol,
                                 label: uppercaseSymbol,
                             }}
-                            render={({ onChange, value }) => (
+                            render={({ field: { onChange, value } }) => (
                                 <Select
                                     onChange={(selected: any) => {
                                         onChange(selected);

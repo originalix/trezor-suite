@@ -7,7 +7,7 @@ import * as walletSettingsActions from '@settings-actions/walletSettingsActions'
 import * as routerActions from '@suite-actions/routerActions';
 import * as protocolActions from '@suite-actions/protocolActions';
 import { AppState } from '@suite-types';
-import { FormState, Output, SendContextValues, UseSendFormState } from '@wallet-types/sendForm';
+import { FormState, SendContextValues, UseSendFormState } from '@wallet-types/sendForm';
 
 import {
     getFeeLevels,
@@ -117,10 +117,18 @@ export const useSendForm = (props: UseSendFormProps): SendContextValues => {
         shouldUnregister: false,
     });
 
-    const { control, reset, register, getValues, errors, setValue } = useFormMethods;
+    const {
+        control,
+        reset,
+        register,
+        unregister,
+        getValues,
+        formState: { errors },
+        setValue,
+    } = useFormMethods;
 
     // register array fields (outputs array in react-hook-form)
-    const outputsFieldArray = useFieldArray<Output>({
+    const outputsFieldArray = useFieldArray({
         control,
         name: 'outputs',
     });
@@ -327,9 +335,13 @@ export const useSendForm = (props: UseSendFormProps): SendContextValues => {
 
     // register custom form fields (without HTMLElement)
     useEffect(() => {
-        register({ name: 'setMaxOutputId', type: 'custom' });
-        register({ name: 'options', type: 'custom' });
-    }, [register]);
+        register('setMaxOutputId');
+        register('options');
+        return () => {
+            unregister('setMaxOutputId');
+            unregister('options');
+        };
+    }, [register, unregister]);
 
     // handle draft change
     useEffect(() => {

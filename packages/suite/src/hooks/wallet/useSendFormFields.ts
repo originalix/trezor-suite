@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { UseFormMethods } from 'react-hook-form';
+import { UseFormReturn } from 'react-hook-form';
 import { formatNetworkAmount, toFiatCurrency } from '@suite-common/wallet-utils';
 import {
     FormState,
@@ -10,7 +10,7 @@ import {
 import { isFeatureFlagEnabled } from '@suite-common/suite-utils';
 import { useBitcoinAmountUnit } from './useBitcoinAmountUnit';
 
-type Props = UseFormMethods<FormState> & {
+type Props = UseFormReturn<FormState> & {
     fiatRates: UseSendFormState['fiatRates'];
     network: UseSendFormState['network'];
 };

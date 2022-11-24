@@ -1,5 +1,5 @@
 import type { AppState } from '@suite-types';
-import type { UseFormMethods, FormState as ReactHookFormState } from 'react-hook-form';
+import type { UseFormReturn, FormState as ReactHookFormState } from 'react-hook-form';
 import type { Account, Network, CoinFiatRates } from '@wallet-types';
 import type { FeeLevel } from '@trezor/connect';
 import type { ExchangeTrade, ExchangeTradeQuoteRequest, ExchangeCoinInfo } from 'invity-api';
@@ -36,7 +36,7 @@ export interface AmountLimits {
     max?: number;
 }
 
-export type ExchangeFormContextValues = Omit<UseFormMethods<ExchangeFormState>, 'register'> & {
+export type ExchangeFormContextValues = Omit<UseFormReturn<ExchangeFormState>, 'register'> & {
     register: (rules?: TypedValidationRules) => (ref: any) => void;
     onSubmit: () => void;
     account: Account;

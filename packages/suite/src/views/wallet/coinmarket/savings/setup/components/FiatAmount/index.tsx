@@ -86,7 +86,7 @@ const FiatAmount = ({
                     control={control}
                     name="fiatAmount"
                     defaultValue={defaultFiatAmount}
-                    render={({ onChange, value }) => (
+                    render={({ field: { onChange, value } }) => (
                         <StyledSelectBar
                             onChange={onChange}
                             selectedOption={value}
@@ -103,7 +103,7 @@ const FiatAmount = ({
                         noError
                         autoFocus
                         inputState={customFiatAmountError ? 'error' : 'success'}
-                        innerRef={register({
+                        {...register({
                             validate: (value: string) => {
                                 if (!value) {
                                     return 'TR_SAVINGS_SETUP_CUSTOM_FIAT_AMOUNT_REQUIRED';

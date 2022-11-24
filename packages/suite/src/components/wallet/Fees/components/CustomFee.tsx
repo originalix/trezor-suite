@@ -1,7 +1,7 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 import styled, { css, useTheme } from 'styled-components';
-import { UseFormMethods } from 'react-hook-form';
+import { UseFormReturn } from 'react-hook-form';
 import { Input, Button, variables, Icon } from '@trezor/components';
 import { FeeLevel } from '@trezor/connect';
 import { Translation } from '@suite-components';
@@ -99,7 +99,7 @@ const SetDefaultLimit = ({ onClick }: { onClick: () => void }) => (
 const FEE_PER_UNIT = 'feePerUnit';
 const FEE_LIMIT = 'feeLimit';
 
-type FormMethods = UseFormMethods<{
+type FormMethods = UseFormReturn<{
     selectedFee?: FeeLevel['label'];
     feePerUnit?: string;
     feeLimit?: string;
@@ -109,7 +109,7 @@ type FormMethods = UseFormMethods<{
 interface CustomFeeProps {
     networkType: Account['networkType'];
     feeInfo: FeeInfo;
-    errors: FormMethods['errors'];
+    errors: FormMethods['formState']['errors'];
     register: (rules?: TypedValidationRules) => (ref: any) => void;
     getValues: FormMethods['getValues'];
     setValue: FormMethods['setValue'];
@@ -229,7 +229,7 @@ export const CustomFee = ({
                                 name={FEE_LIMIT}
                                 data-test={FEE_LIMIT}
                                 onChange={changeFeeLimit}
-                                innerRef={register({
+                                {...register({
                                     required: 'CUSTOM_FEE_IS_NOT_SET',
                                     validate: validateFeeLimit,
                                 })}
@@ -240,7 +240,7 @@ export const CustomFee = ({
                         <Spacer />
                     </>
                 ) : (
-                    <input type="hidden" name={FEE_LIMIT} ref={register()} />
+                    <input type="hidden" name={FEE_LIMIT} {...register()} />
                 )}
                 <Col singleCol={!useFeeLimit}>
                     <StyledInput
@@ -252,7 +252,7 @@ export const CustomFee = ({
                         innerAddon={<Units>{getFeeUnits(networkType)}</Units>}
                         name={FEE_PER_UNIT}
                         data-test={FEE_PER_UNIT}
-                        innerRef={register({
+                        {...register({
                             required: 'CUSTOM_FEE_IS_NOT_SET',
                             validate: validateFee,
                         })}

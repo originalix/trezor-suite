@@ -21,7 +21,7 @@ const FiatInput = () => {
         register,
         network,
         clearErrors,
-        errors,
+        formState: { errors },
         trigger,
         updateSendCryptoValue,
         setValue,
@@ -76,7 +76,7 @@ const FiatInput = () => {
             name={FIAT_INPUT}
             noTopLabel
             maxLength={MAX_LENGTH.AMOUNT}
-            innerRef={fiatInputRef}
+            {...fiatInputRef}
             bottomText={<InputError error={fiatError} />}
             innerAddon={<FiatSelect />}
             data-test="@coinmarket/exchange/fiat-input"

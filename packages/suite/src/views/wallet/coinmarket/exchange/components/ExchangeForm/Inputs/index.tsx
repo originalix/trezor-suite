@@ -1,6 +1,6 @@
 import { useTheme, SuiteThemeColors } from '@trezor/components';
 import React, { useCallback, useEffect } from 'react';
-import { DeepMap, FieldError } from 'react-hook-form';
+import { FieldErrors } from 'react-hook-form';
 import styled from 'styled-components';
 import BigNumber from 'bignumber.js';
 import { isZero, amountToSatoshi } from '@suite-common/wallet-utils';
@@ -33,7 +33,7 @@ const EmptyDiv = styled.div`
 
 const getLineDividerColor = (
     theme: SuiteThemeColors,
-    errors: DeepMap<ExchangeFormState, FieldError>,
+    errors: FieldErrors<ExchangeFormState>,
     amount: string,
     fiat: string,
 ) => {
@@ -56,7 +56,7 @@ const Inputs = () => {
         trigger,
         amountLimits,
         account,
-        errors,
+        formState: { errors },
         getValues,
         composeRequest,
         network,

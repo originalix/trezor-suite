@@ -1,11 +1,11 @@
 import { useEffect, useRef } from 'react';
-import { UseFormMethods } from 'react-hook-form';
+import { UseFormReturn } from 'react-hook-form';
 import { FeeLevel } from '@trezor/connect';
 import * as walletSettingsActions from '@settings-actions/walletSettingsActions';
 import { useActions } from '@suite-hooks';
 import { FeeInfo, PrecomposedLevels, PrecomposedLevelsCardano } from '@wallet-types/sendForm';
 
-type Props = UseFormMethods<{
+type Props = UseFormReturn<{
     selectedFee?: FeeLevel['label'];
     feePerUnit?: string;
     feeLimit?: string;
@@ -30,9 +30,10 @@ export const useFees = ({
     composedLevels,
     watch,
     register,
+    unregister,
     getValues,
     setValue,
-    errors,
+    formState: { errors },
     clearErrors,
 }: Props) => {
     // local references
@@ -48,9 +49,13 @@ export const useFees = ({
 
     // register custom form fields (without HTMLElement)
     useEffect(() => {
-        register({ name: 'selectedFee', type: 'custom' }); // NOTE: custom is not a fee level, its a type of `react-hook-form` field
-        register({ name: 'estimatedFeeLimit', type: 'custom' });
-    }, [register]);
+        register('selectedFee'); // NOTE: custom is not a fee level, its a type of `react-hook-form` field
+        register('estimatedFeeLimit');
+        return () => {
+            unregister('selectedFee');
+            unregister('estimatedFeeLimit');
+        };
+    }, [register, unregister]);
 
     // watch selectedFee change and update local references
     const selectedFee = watch('selectedFee');

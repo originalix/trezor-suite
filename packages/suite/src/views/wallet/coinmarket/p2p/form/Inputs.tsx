@@ -70,7 +70,7 @@ export const Inputs = () => {
             <Left>
                 <Input
                     noTopLabel
-                    innerRef={fiatInputRef}
+                    {...fiatInputRef}
                     inputState={getInputState(errors.fiatInput, fiatInputValue)}
                     name={fiatInput}
                     maxLength={MAX_LENGTH.AMOUNT}
@@ -80,7 +80,7 @@ export const Inputs = () => {
                             control={control}
                             name={currencySelect}
                             defaultValue={defaultCurrency}
-                            render={({ onChange, value }) => (
+                            render={({ field: { onChange, value } }) => (
                                 <Select
                                     options={FIAT.currencies
                                         .filter(c => p2pInfo?.supportedCurrencies.has(c))

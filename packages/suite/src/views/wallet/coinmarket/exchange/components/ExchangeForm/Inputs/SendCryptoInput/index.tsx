@@ -176,7 +176,7 @@ const SendCryptoInput = () => {
             noTopLabel
             maxLength={MAX_LENGTH.AMOUNT}
             isToken={!!tokenData}
-            innerRef={cryptoInputRef}
+            {...cryptoInputRef}
             bottomText={<InputError error={amountError} />}
             innerAddon={<SendCryptoSelect />}
         />

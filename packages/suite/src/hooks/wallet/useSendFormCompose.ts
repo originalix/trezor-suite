@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { UseFormMethods } from 'react-hook-form';
+import { UseFormReturn } from 'react-hook-form';
 import {
     FormState,
     UseSendFormState,
@@ -15,7 +15,7 @@ import { isChanged } from '@suite-utils/comparisonUtils';
 import * as sendFormActions from '@wallet-actions/sendFormActions';
 import { findComposeErrors, getExcludedUtxos } from '@suite-common/wallet-utils';
 
-type Props = UseFormMethods<FormState> & {
+type Props = UseFormReturn<FormState> & {
     state: UseSendFormState;
     account: UseSendFormState['account']; // account from the component props !== state.account
     updateContext: SendContextValues['updateContext'];
@@ -28,7 +28,7 @@ export const useSendFormCompose = ({
     getValues,
     setValue,
     setError,
-    errors,
+    formState: { errors },
     clearErrors,
     state,
     account,
