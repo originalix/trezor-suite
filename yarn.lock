@@ -6398,7 +6398,7 @@ __metadata:
     "@trezor/utils": "*"
     jest: ^26.6.3
     react: 18.2.0
-    react-hook-form: 6.15.7
+    react-hook-form: 7.39.4
     typescript: 4.9.3
   languageName: unknown
   linkType: soft
@@ -6429,7 +6429,7 @@ __metadata:
     jest: ^26.6.3
     pdfmake: ^0.2.5
     react: 18.2.0
-    react-hook-form: 6.15.7
+    react-hook-form: 7.39.4
     trezor-address-validator: ^0.4.3
     typescript: 4.9.3
     web3-utils: ^1.7.3
@@ -6520,7 +6520,7 @@ __metadata:
   dependencies:
     "@suite-native/atoms": "*"
     react: 18.2.0
-    react-hook-form: 6.15.7
+    react-hook-form: 7.39.4
     yup: ^0.32.11
   languageName: unknown
   linkType: soft
@@ -7786,7 +7786,7 @@ __metadata:
     react: 18.2.0
     react-dom: 18.2.0
     react-focus-lock: ^2.9.1
-    react-hook-form: 6.15.7
+    react-hook-form: 7.39.4
     react-intl: ^6.0.5
     react-markdown: ^8.0.3
     react-qr-reader: ^2.2.1
@@ -27351,12 +27351,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-hook-form@npm:6.15.7":
-  version: 6.15.7
-  resolution: "react-hook-form@npm:6.15.7"
+"react-hook-form@npm:7.39.4":
+  version: 7.39.4
+  resolution: "react-hook-form@npm:7.39.4"
   peerDependencies:
-    react: ^16.8.0 || ^17
-  checksum: 5692288ef64409cf8e2591fb515d54d5d1f6ed67d29dd29aae88e4e6d46bd2289a6c6f3fdd069b9e692f19b25bbf0136887d33219015631b3cc7db6e7897eb5c
+    react: ^16.8.0 || ^17 || ^18
+  checksum: 767337330a9ce305296adb435e05380fb138308931a0ca20f7a681604acf16a978f14f48d52279fb2eccc690f808622fa4db019835fd0e4fd6a768d2c13b83d0
   languageName: node
   linkType: hard
 
