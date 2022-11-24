@@ -46,7 +46,7 @@ const Data = ({ close }: Props) => {
                 data-test={inputAsciiName}
                 defaultValue={asciiValue}
                 maxLength={MAX_LENGTH.ETH_DATA}
-                innerRef={register({
+                {...register({
                     required: 'DATA_NOT_SET',
                 })}
                 onChange={event => {
@@ -74,7 +74,7 @@ const Data = ({ close }: Props) => {
                 data-test={inputHexName}
                 defaultValue={hexValue}
                 maxLength={MAX_LENGTH.ETH_DATA}
-                innerRef={register({
+                {...register({
                     required: 'DATA_NOT_SET',
                     validate: (value: string) => {
                         if (!isHexValid(value, '0x')) return 'DATA_NOT_VALID_HEX';

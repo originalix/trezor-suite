@@ -1,9 +1,9 @@
 import { useCallback, useEffect } from 'react';
-import { useFieldArray, UseFormMethods } from 'react-hook-form';
+import { useFieldArray, UseFormReturn } from 'react-hook-form';
 import { FormState, UseSendFormState, SendContextValues } from '@wallet-types/sendForm';
 import { DEFAULT_PAYMENT, DEFAULT_OPRETURN } from '@suite-common/wallet-constants';
 
-type Props = UseFormMethods<FormState> & {
+type Props = UseFormReturn<FormState> & {
     outputsFieldArray: ReturnType<typeof useFieldArray>;
     localCurrencyOption: UseSendFormState['localCurrencyOption'];
     composeRequest: SendContextValues['composeTransaction'];
@@ -97,7 +97,7 @@ export const useSendFormOutputs = ({
     const { fields } = outputsFieldArray;
     useEffect(() => {
         fields.forEach((output, index) => {
-            register({ name: `outputs[${index}].type`, type: 'custom' });
+            register({ name: `outputs[${index}].type` });
             // set defaultValues
             setValue(`outputs[${index}].type`, output.type);
         });

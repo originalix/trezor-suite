@@ -1,4 +1,4 @@
-import { DeepMap, FieldError, UseFormMethods } from 'react-hook-form';
+import { DeepMap, FieldError, FieldErrors } from 'react-hook-form';
 
 import BigNumber from 'bignumber.js';
 import Common, { Chain, Hardfork } from '@ethereumjs/common';
@@ -223,7 +223,7 @@ export const getFeeUnits = (networkType: Network['networkType']) => {
 };
 
 // Find all errors with type='compose' in FormState errors
-export const findComposeErrors = (errors: UseFormMethods['errors'], prefix?: string) => {
+export const findComposeErrors = <A extends FieldErrors>(errors: A, prefix?: string) => {
     const composeErrors: string[] = [];
     if (!errors || typeof errors !== 'object') return composeErrors;
     Object.keys(errors).forEach(key => {
@@ -232,7 +232,7 @@ export const findComposeErrors = (errors: UseFormMethods['errors'], prefix?: str
             if (Array.isArray(val)) {
                 // outputs
                 val.forEach((output, index) =>
-                    composeErrors.push(...findComposeErrors(output, `outputs[${index}]`)),
+                    composeErrors.push(...findComposeErrors(output, `outputs.${index}`)),
                 );
             } else if (
                 typeof val === 'object' &&

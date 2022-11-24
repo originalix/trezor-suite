@@ -98,7 +98,7 @@ const CoinmarketSavingsSetup = (props: WithSelectedAccountLoadedProps) => {
         fiatCurrency,
         register,
         account,
-        errors,
+        formState: { errors },
         canConfirmSetup,
         handleSubmit,
         onSubmit,
@@ -144,7 +144,7 @@ const CoinmarketSavingsSetup = (props: WithSelectedAccountLoadedProps) => {
                 control={control}
                 name="country"
                 defaultValue={defaultCountryOption}
-                render={({ onChange, value }) => (
+                render={({ field: { onChange, value } }) => (
                     <StyledSelect
                         value={value}
                         label={<Translation id="TR_SAVINGS_UNSUPPORTED_COUNTRY_SELECT_LABEL" />}
@@ -194,7 +194,7 @@ const CoinmarketSavingsSetup = (props: WithSelectedAccountLoadedProps) => {
                         control={control}
                         name="paymentFrequency"
                         defaultValue={defaultPaymentFrequency}
-                        render={({ onChange, value }) => (
+                        render={({ field: { onChange, value } }) => (
                             <FrequencyStyledSelectBar
                                 onChange={onChange}
                                 selectedOption={value}

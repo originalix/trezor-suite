@@ -209,7 +209,7 @@ export const Fiat = ({ output, outputId }: Props) => {
                 data-test={inputName}
                 defaultValue={fiatValue}
                 maxLength={MAX_LENGTH.FIAT}
-                innerRef={register({
+                {...register({
                     required: 'AMOUNT_IS_NOT_SET',
                     validate: (value: string) => {
                         const amountBig = new BigNumber(value);

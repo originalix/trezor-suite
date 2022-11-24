@@ -41,7 +41,12 @@ const ButtonSend = styled(Button)`
 `;
 
 const Raw = ({ network }: { network: Network }) => {
-    const { register, getValues, setValue, errors } = useForm({
+    const {
+        register,
+        getValues,
+        setValue,
+        formState: { errors },
+    } = useForm({
         mode: 'onChange',
         defaultValues: {
             rawTx: '',
@@ -64,10 +69,9 @@ const Raw = ({ network }: { network: Network }) => {
                 <Textarea
                     inputState={inputState}
                     isMonospace
-                    name={inputName}
                     data-test={inputName}
                     defaultValue={inputValue}
-                    innerRef={register({
+                    {...register(inputName, {
                         required: 'RAW_TX_NOT_SET',
                         validate: (value: string) => {
                             if (

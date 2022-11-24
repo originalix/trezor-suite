@@ -58,7 +58,7 @@ const StyledSelect = styled(Select)`
 
 const Footer = () => {
     const {
-        errors,
+        formState: { errors },
         control,
         formState,
         watch,
@@ -90,7 +90,7 @@ const Footer = () => {
                             : defaultCountry
                     }
                     name={countrySelect}
-                    render={({ onChange, value }) => (
+                    render={({ field: { onChange, value } }) => (
                         <StyledSelect
                             options={regional.countriesOptions}
                             isSearchable

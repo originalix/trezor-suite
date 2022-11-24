@@ -7,7 +7,6 @@ import { useDevice } from '@suite-hooks';
 import { useSendFormContext } from '@wallet-hooks';
 import { isLowAnonymityWarning } from '@suite-common/wallet-utils';
 import { Translation } from '@suite-components/Translation';
-import { FormOptions } from '@wallet-types/sendForm';
 
 const StyledWarning = styled(Warning)`
     margin-top: 8px;
@@ -71,7 +70,7 @@ export const ReviewButton = () => {
         isLowAnonymityUtxoSelected,
     } = useSendFormContext();
 
-    const options = useWatch<FormOptions[]>({
+    const options = useWatch({
         name: 'options',
         defaultValue: getDefaultValue('options', []),
         control,

@@ -116,8 +116,8 @@ export const TokenSelect = ({ output, outputId }: Props) => {
         watch,
     } = useSendFormContext();
 
-    const tokenInputName = `outputs[${outputId}].token`;
-    const amountInputName = `outputs[${outputId}].amount`;
+    const tokenInputName = `outputs.${outputId}.token` as const;
+    const amountInputName = `outputs.${outputId}.amount` as const;
     const tokenValue = getDefaultValue(tokenInputName, output.token);
     const isSetMaxActive = getDefaultValue('setMaxOutputId') === outputId;
     const dataEnabled = getDefaultValue('options', []).includes('ethereumData');
@@ -130,7 +130,7 @@ export const TokenSelect = ({ output, outputId }: Props) => {
     const tokenWatch = watch(tokenInputName, null);
     useEffect(() => {
         if (account.networkType === 'ethereum' && !isSetMaxActive) {
-            const amountValue = getValues(`outputs[${outputId}].amount`) as string;
+            const amountValue = getValues(`outputs.${outputId}.amount`) as string;
             if (amountValue) setAmount(outputId, amountValue);
         }
     }, [outputId, tokenWatch, setAmount, getValues, account.networkType, isSetMaxActive]);

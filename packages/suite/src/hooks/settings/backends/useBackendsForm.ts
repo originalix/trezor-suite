@@ -46,7 +46,7 @@ const getUrlPlaceholder = (coin: Network['symbol'], type: BackendOption) => {
 const useBackendUrlInput = (
     coin: Network['symbol'],
     type: BackendOption,
-    currentUrls: string[],
+    // currentUrls: string[],
 ) => {
     const { register, watch, setValue, errors } = useForm<{ url: string }>({
         mode: 'onChange',
@@ -54,19 +54,19 @@ const useBackendUrlInput = (
     const { translationString } = useTranslation();
 
     const name = 'url';
-    const ref = register({
-        validate: (value: string) => {
-            // Check if URL is valid
-            if (!validateUrl(type, value)) {
-                return 'TR_CUSTOM_BACKEND_INVALID_URL';
-            }
+    // const ref = register({
+    //     validate: (value: string) => {
+    //         // Check if URL is valid
+    //         if (!validateUrl(type, value)) {
+    //             return 'TR_CUSTOM_BACKEND_INVALID_URL';
+    //         }
 
-            // Check if already exists
-            if (currentUrls.find(url => url === value)) {
-                return 'TR_CUSTOM_BACKEND_BACKEND_ALREADY_ADDED';
-            }
-        },
-    });
+    //         // Check if already exists
+    //         if (currentUrls.find(url => url === value)) {
+    //             return 'TR_CUSTOM_BACKEND_BACKEND_ALREADY_ADDED';
+    //         }
+    //     },
+    // });
 
     const placeholder = translationString('SETTINGS_ADV_COIN_URL_INPUT_PLACEHOLDER', {
         url: getUrlPlaceholder(coin, type),
@@ -75,7 +75,7 @@ const useBackendUrlInput = (
     return {
         name,
         placeholder,
-        ref,
+        register,
         error: errors[name],
         value: watch(name) || '',
         reset: () => setValue(name, ''),

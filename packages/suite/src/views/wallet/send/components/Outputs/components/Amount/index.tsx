@@ -299,7 +299,7 @@ export const Amount = ({ output, outputId }: Props) => {
                         data-test={inputName}
                         defaultValue={amountValue}
                         maxLength={MAX_LENGTH.AMOUNT}
-                        innerRef={cryptoAmountRef}
+                        {...cryptoAmountRef}
                         innerAddon={
                             withTokens ? (
                                 <TokenSelect output={output} outputId={outputId} />

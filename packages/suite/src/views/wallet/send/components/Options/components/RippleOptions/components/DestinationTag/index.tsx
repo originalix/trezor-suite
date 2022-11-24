@@ -27,7 +27,7 @@ const DestinationTag = ({ close }: Props) => {
             data-test={inputName}
             defaultValue={inputValue}
             maxLength={MAX_LENGTH.XRP_DESTINATION_TAG}
-            innerRef={register({
+            {...register({
                 required: 'DESTINATION_TAG_NOT_SET',
                 validate: (value: string) => {
                     const amountBig = new BigNumber(value);

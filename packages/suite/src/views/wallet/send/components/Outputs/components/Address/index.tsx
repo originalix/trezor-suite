@@ -245,7 +245,7 @@ export const Address = ({ output, outputId, outputsCount }: AddressProps) => {
             data-test={inputName}
             defaultValue={addressValue}
             maxLength={MAX_LENGTH.ADDRESS}
-            innerRef={register({
+            {...register({
                 required: 'RECIPIENT_IS_NOT_SET',
                 validate: validateAddress,
             })}

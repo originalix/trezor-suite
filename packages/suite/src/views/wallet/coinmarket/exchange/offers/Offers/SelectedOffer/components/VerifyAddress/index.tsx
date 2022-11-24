@@ -102,7 +102,7 @@ const VerifyAddressComponent = () => {
         receiveSymbol,
     } = useCoinmarketExchangeOffersContext();
     const [selectedAccountOption, setSelectedAccountOption] = useState<AccountSelectOption>();
-    const { register, watch, errors, formState, setValue, control } = useForm<FormState>({
+    const { register, watch, formState, setValue, control } = useForm<FormState>({
         mode: 'onChange',
     });
 
@@ -181,8 +181,7 @@ const VerifyAddressComponent = () => {
                                 </Label>
                             }
                             variant="small"
-                            name="address"
-                            innerRef={typedRegister({
+                            {...register('address', {
                                 required: 'TR_EXCHANGE_RECEIVING_ADDRESS_REQUIRED',
                                 validate: value => {
                                     if (
@@ -196,8 +195,8 @@ const VerifyAddressComponent = () => {
                                 },
                             })}
                             readOnly={selectedAccountOption?.type !== 'NON_SUITE'}
-                            inputState={errors.address ? 'error' : undefined}
-                            bottomText={<InputError error={errors.address} />}
+                            inputState={formState.errors.address ? 'error' : undefined}
+                            bottomText={<InputError error={formState.errors.address} />}
                         />
                     )}
 
@@ -233,8 +232,7 @@ const VerifyAddressComponent = () => {
                                     />
                                 </Label>
                             }
-                            name="extraField"
-                            innerRef={typedRegister({
+                            {...register('extraField', {
                                 required: selectedQuote?.extraFieldDescription?.required ? (
                                     <Translation
                                         id="TR_EXCHANGE_EXTRA_FIELD_REQUIRED"
@@ -262,8 +260,8 @@ const VerifyAddressComponent = () => {
                                     }
                                 },
                             })}
-                            inputState={errors.extraField ? 'error' : undefined}
-                            bottomText={<InputError error={errors.extraField} />}
+                            inputState={formState.errors.extraField ? 'error' : undefined}
+                            bottomText={<InputError error={formState.errors.extraField} />}
                         />
                     </Row>
                 )}

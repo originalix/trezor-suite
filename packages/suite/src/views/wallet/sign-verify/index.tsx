@@ -100,6 +100,7 @@ const SignVerify = () => {
     const isSignPage = page === 'sign';
 
     const {
+        register,
         isFormDirty,
         isSubmitting,
         resetForm,
@@ -107,8 +108,6 @@ const SignVerify = () => {
         formValues,
         formErrors,
         formSetSignature,
-        messageRef,
-        signatureRef,
         hexField,
         addressField,
         pathField,
@@ -196,7 +195,6 @@ const SignVerify = () => {
                 <Form onSubmit={formSubmit(onSubmit)}>
                     <Row>
                         <Textarea
-                            name="message"
                             label={<Translation id="TR_MESSAGE" />}
                             labelRight={
                                 <SwitchWrapper>
@@ -204,7 +202,7 @@ const SignVerify = () => {
                                     <Switch {...hexField} isSmall />
                                 </SwitchWrapper>
                             }
-                            innerRef={messageRef}
+                            {...register('message')}
                             inputState={getInputState(formErrors.message, formValues.message)}
                             bottomText={<InputError error={formErrors.message} />}
                             rows={4}
@@ -274,11 +272,10 @@ const SignVerify = () => {
                                 )}
 
                                 <Input
-                                    name="signature"
                                     label={<Translation id="TR_SIGNATURE" />}
                                     maxLength={MAX_LENGTH_SIGNATURE}
                                     type="text"
-                                    innerRef={signatureRef}
+                                    {...register('signature')}
                                     readOnly={isSignPage}
                                     isDisabled={!formValues.signature?.length}
                                     inputState={getInputState(
@@ -294,10 +291,9 @@ const SignVerify = () => {
                             </>
                         ) : (
                             <Textarea
-                                name="signature"
                                 label={<Translation id="TR_SIGNATURE" />}
                                 maxLength={MAX_LENGTH_SIGNATURE}
-                                innerRef={signatureRef}
+                                {...register('signature')}
                                 inputState={getInputState(
                                     formErrors.signature,
                                     formValues.signature,

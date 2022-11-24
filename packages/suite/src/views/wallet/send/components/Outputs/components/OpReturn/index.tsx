@@ -56,7 +56,7 @@ const OpReturn = ({ outputId }: { outputId: number }) => {
                 data-test={inputAsciiName}
                 defaultValue={asciiValue}
                 maxLength={MAX_LENGTH.OP_RETURN}
-                innerRef={register({
+                {...register({
                     required: 'DATA_NOT_SET',
                 })}
                 onChange={event => {
@@ -93,7 +93,7 @@ const OpReturn = ({ outputId }: { outputId: number }) => {
                 data-test={inputHexName}
                 defaultValue={hexValue}
                 maxLength={MAX_LENGTH.OP_RETURN}
-                innerRef={register({
+                {...register({
                     required: 'DATA_NOT_SET',
                     validate: (value: string) => {
                         if (!isHexValid(value)) return 'DATA_NOT_VALID_HEX';

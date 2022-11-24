@@ -49,7 +49,7 @@ const TokenLogo = styled.img`
 const CryptoInput = ({ activeInput, setActiveInput }: Props) => {
     const {
         register,
-        errors,
+        formState: { errors },
         account,
         network,
         control,
@@ -181,14 +181,14 @@ const CryptoInput = ({ activeInput, setActiveInput }: Props) => {
             name={CRYPTO_INPUT}
             noTopLabel
             maxLength={MAX_LENGTH.AMOUNT}
-            innerRef={cryptoInputRef}
+            {...cryptoInputRef}
             bottomText={<InputError error={errors[CRYPTO_INPUT]} />}
             innerAddon={
                 <Controller
                     control={control}
                     name={CRYPTO_CURRENCY_SELECT}
                     defaultValue={cryptoOption}
-                    render={({ onChange, value }) => (
+                    render={({ field: { onChange, value } }) => (
                         <Select
                             onChange={(selected: any) => {
                                 setValue('setMaxOutputId', undefined);
@@ -203,16 +203,16 @@ const CryptoInput = ({ activeInput, setActiveInput }: Props) => {
                                     token === 'TGOR' ||
                                     token === 'ETC'
                                 ) {
-                                    setValue(CRYPTO_TOKEN, undefined);
+                                    setValue(CRYPTO_TOKEN, null);
                                     // set own account for non ERC20 transaction
-                                    setValue('outputs[0].address', account.descriptor);
+                                    setValue('outputs.0.address', account.descriptor);
                                 } else {
                                     // set the address of the token to the output
                                     const symbol = invityApiSymbolToSymbol(token).toLowerCase();
                                     const tokenData = tokens?.find(t => t.symbol === symbol);
-                                    setValue(CRYPTO_TOKEN, tokenData?.address);
+                                    setValue(CRYPTO_TOKEN, tokenData?.address ?? null);
                                     // set token address for ERC20 transaction to estimate the fees more precisely
-                                    setValue('outputs[0].address', tokenData?.address);
+                                    setValue('outputs.0.address', tokenData?.address ?? '');
                                 }
                                 composeRequest();
                             }}

@@ -1,4 +1,4 @@
-import { UseFormMethods } from 'react-hook-form';
+import { UseFormReturn } from 'react-hook-form';
 
 import { Network } from '@suite-common/wallet-config';
 import { AccountUtxo, FeeLevel, PROTO } from '@trezor/connect';
@@ -70,8 +70,9 @@ export interface GetDefaultValue {
     <K, T>(fieldName: K, fallback: T): K extends keyof FormState ? FormState[K] : T;
 }
 
-export type SendContextValues = Omit<UseFormMethods<FormState>, 'register'> &
+export type SendContextValues = Omit<UseFormReturn<FormState>, 'register'> &
     UseSendFormState & {
+        errors: UseFormReturn<FormState>['formState']['errors'];
         // strongly typed UseFormMethods.register
         register: (rules?: TypedValidationRules) => (ref: any) => void; // TODO: ReturnType of UseFormMethods['register'] union
         // additional fields

@@ -23,7 +23,7 @@ interface Props {
 const FiatInput = ({ activeInput, setActiveInput }: Props) => {
     const {
         register,
-        errors,
+        formState: { errors },
         control,
         formState,
         amountLimits,
@@ -37,8 +37,7 @@ const FiatInput = ({ activeInput, setActiveInput }: Props) => {
     } = useCoinmarketSellFormContext();
 
     const fiatInputValue = getValues(FIAT_INPUT);
-    const { outputs } = getValues();
-    const tokenAddress = outputs?.[0]?.token;
+    const tokenAddress = getValues('outputs.0.token');
     const tokenData = account.tokens?.find(t => t.address === tokenAddress);
 
     const fiatInputRef = register({
@@ -102,7 +101,7 @@ const FiatInput = ({ activeInput, setActiveInput }: Props) => {
         <Input
             noTopLabel
             defaultValue=""
-            innerRef={fiatInputRef}
+            {...fiatInputRef}
             onFocus={() => {
                 setActiveInput(FIAT_INPUT);
             }}
@@ -127,7 +126,7 @@ const FiatInput = ({ activeInput, setActiveInput }: Props) => {
                               }
                             : defaultCurrency
                     }
-                    render={({ onChange, value }) => (
+                    render={({ field: { value, onChange } }) => (
                         <Select
                             options={FIAT.currencies
                                 .filter(c => sellInfo?.supportedFiatCurrencies.has(c))
