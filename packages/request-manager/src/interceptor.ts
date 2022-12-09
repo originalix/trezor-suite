@@ -5,6 +5,35 @@ import tls from 'tls';
 import { InterceptedEvent } from './types';
 import { TorIdentities } from './torIdentities';
 
+const createRequestPool = () => {
+    const requestPool = [];
+    const addRequestToPull = (request: any) => {
+        requestPool.push({
+            request,
+            startTime: new Date().getTime(),
+        });
+        request.on('response', (_response: any) => {
+            // console.log('Response in interceptor');
+            // console.log('response', response);
+        });
+        request.on('end', (_response: any) => {
+            // console.log('end in interceptor');
+            // console.log('end', response);
+        });
+        request.on('error', (error: any) => {
+            console.log('error in interceptor');
+            const isProxyConnectionTimedout = error.message.includes('Proxy connection timed out');
+            console.log('isProxyConnectionTimedout', isProxyConnectionTimedout);
+            const isProxyRejectedConnection = error.message.includes(
+                'Socks5 proxy rejected connection',
+            );
+            console.log('isProxyRejectedConnection', isProxyRejectedConnection);
+        });
+    };
+
+    return { addRequestToPull };
+};
+
 type InterceptorOptions = {
     handler: (event: InterceptedEvent) => void;
     getIsTorEnabled: () => boolean;
@@ -156,13 +185,20 @@ const interceptHttp = (interceptorOptions: InterceptorOptions) => {
     };
 };
 
-const interceptHttps = (interceptorOptions: InterceptorOptions) => {
+const interceptHttps = (interceptorOptions: InterceptorOptions, requestPool: any) => {
     const originalHttpsRequest = https.request;
 
     https.request = (...args) => {
         const overload = overloadHttpRequest(interceptorOptions, ...args);
         if (overload) {
-            return originalHttpsRequest(...overload);
+            const request = originalHttpsRequest(...overload);
+            // console.log('request in interceptor', request);
+            requestPool.addRequestToPull(request);
+            // request.on('response', res => {
+            //     console.log('Response in interceptor');
+            //     console.log('res', res);
+            // });
+            return request;
         }
 
         // In cases that are not considered above we pass the args as they came.
@@ -182,9 +218,10 @@ const interceptTlsConnect = (interceptorOptions: InterceptorOptions) => {
 };
 
 export const createInterceptor = (interceptorOptions: InterceptorOptions) => {
+    const requestPool = createRequestPool();
     interceptNetSocketConnect(interceptorOptions);
     interceptNetConnect(interceptorOptions);
     interceptHttp(interceptorOptions);
-    interceptHttps(interceptorOptions);
+    interceptHttps(interceptorOptions, requestPool);
     interceptTlsConnect(interceptorOptions);
 };
