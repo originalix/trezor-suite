@@ -8,7 +8,7 @@ import { CardWithHeader } from './CardWithHeader';
 import NotificationCard from './NotificationCard';
 import PinInput from './PinInput';
 import NoRatesTooltip from './NoRatesTooltip';
-import WordInput from './WordInput';
+import { WordInput } from './WordInput';
 import WordInputAdvanced from './WordInputAdvanced';
 import Loading from './Loading';
 import BundleLoader from './BundleLoader';
