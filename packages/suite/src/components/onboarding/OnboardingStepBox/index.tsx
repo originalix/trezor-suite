@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import TrezorConnect from '@trezor/connect';
 import {
     ConfirmOnDevice,
     Backdrop,
@@ -67,6 +68,7 @@ export const OnboardingStepBox = ({
                     <ConfirmOnDevice
                         title={<Translation id="TR_CONFIRM_ON_TREZOR" />}
                         deviceModel={deviceModel}
+                        onCancel={() => TrezorConnect.cancel()}
                     />
                 )}
             </ConfirmWrapper>
