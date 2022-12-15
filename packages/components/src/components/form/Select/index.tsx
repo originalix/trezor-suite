@@ -262,31 +262,12 @@ export const Select = ({
     'data-test': dataTest,
     ...props
 }: SelectProps) => {
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
-
     const selectRef = useRef<SelectInstance<Option>>(null);
 
     const theme = useTheme();
 
     const lastKeyPressTimestamp = useRef(0);
     const searchedTerm = useRef('');
-
-    useEffect(() => {
-        if (!document.getElementById('layout-scroll')) {
-            return;
-        }
-
-        const select = selectRef.current;
-
-        const handleBlur = () => select?.blur();
-
-        if (isMenuOpen) {
-            document.getElementById('layout-scroll')?.addEventListener('scroll', handleBlur);
-        }
-
-        return () =>
-            document.getElementById('layout-scroll')?.removeEventListener('scroll', handleBlur);
-    }, [isMenuOpen, selectRef]);
 
     const findOption = useCallback((options: Options<Option>, query: string) => {
         let foundOption;
@@ -319,6 +300,11 @@ export const Select = ({
             });
         }
     }, []);
+
+    const closeMenuOnScroll = useCallback(
+        (e: Event) => !(e.target as Element)?.className.includes('react-select'),
+        [],
+    );
 
     const onKeyDown = useCallback(
         async (event: React.KeyboardEvent) => {
@@ -441,8 +427,6 @@ export const Select = ({
             <ReactSelect
                 ref={selectRef}
                 onKeyDown={onKeyDown}
-                onMenuOpen={() => setIsMenuOpen(true)}
-                onMenuClose={() => setIsMenuOpen(false)}
                 classNamePrefix="react-select"
                 openMenuOnFocus
                 menuPortalTarget={document.body}
@@ -458,6 +442,7 @@ export const Select = ({
                 )}
                 onChange={handleOnChange}
                 isSearchable={isSearchable}
+                closeMenuOnScroll={closeMenuOnScroll}
                 {...props}
                 components={{ Control, Option, GroupHeading, ...components }}
             />
