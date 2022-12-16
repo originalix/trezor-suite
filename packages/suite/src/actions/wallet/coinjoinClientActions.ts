@@ -589,3 +589,16 @@ export const getCoinjoinServerEnvironment =
             return debug.coinjoinRegtestServerEnvironment;
         }
     };
+
+// TODO:
+/**
+ * Use toast based on listen to event of network misbehaving.
+ *
+            dispatch(
+                notificationsActions.addToast({
+                    type: 'error',
+                    error: `Coinjoin client not enabled: ${error.message}`,
+                }),
+            );
+
+ */

@@ -10,7 +10,24 @@ export type BootstrapEvent = {
     summary: string | undefined;
 };
 
-export interface InterceptedEvent {
-    method: string;
-    details: string;
-}
+export type InterceptedEvent =
+    | {
+          type: 'INTERCEPTED_REQUEST';
+          method: string;
+          details: string;
+      }
+    | {
+          type: 'INTERCEPTED_RESPONSE';
+          host: string;
+          time: number;
+          statusCode: number;
+      }
+    | {
+          type: 'NETWORK_MISBEHAVING';
+      };
+
+export type InterceptorOptions = {
+    handler: (event: InterceptedEvent) => void;
+    getIsTorEnabled: () => boolean;
+    isDevEnv?: boolean;
+};
