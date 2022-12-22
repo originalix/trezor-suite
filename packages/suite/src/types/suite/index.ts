@@ -110,6 +110,11 @@ export enum TorStatus {
     Error = 'Error',
 }
 
+export interface TorBootstrap {
+    current: number;
+    total: number;
+}
+
 export enum FirmwareType {
     BitcoinOnly = 'Bitcoin-only',
     Universal = 'Universal',

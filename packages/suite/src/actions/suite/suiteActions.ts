@@ -10,7 +10,7 @@ import { sortByTimestamp } from '@suite-utils/device';
 import { notificationsActions } from '@suite-common/toast-notifications';
 import * as modalActions from '@suite-actions/modalActions';
 import * as firmwareActions from '@firmware-actions/firmwareActions';
-import { TorStatus } from '@suite-types';
+import { TorBootstrap, TorStatus } from '@suite-types';
 import { SUITE, METADATA } from './constants';
 import type { Locale } from '@suite-config/languages';
 import type {
@@ -57,6 +57,7 @@ export type SuiteAction =
     | { type: typeof SUITE.SET_DEBUG_MODE; payload: Partial<DebugModeOptions> }
     | { type: typeof SUITE.ONLINE_STATUS; payload: boolean }
     | { type: typeof SUITE.TOR_STATUS; payload: TorStatus }
+    | { type: typeof SUITE.TOR_BOOTSTRAP; payload: TorBootstrap }
     | { type: typeof SUITE.ONION_LINKS; payload: boolean }
     | { type: typeof SUITE.LOCK_UI; payload: boolean }
     | ReturnType<typeof lockDevice>
@@ -148,13 +149,23 @@ export const updateOnlineStatus = (payload: boolean): SuiteAction => ({
 });
 
 /**
- * Triggered by `@suite-support/TorStatus`
+ * Triggered by `@suite/tor-status`
  * Set `tor` status in suite reducer
  * @param {boolean} payload
  * @returns {Action}
  */
 export const updateTorStatus = (payload: TorStatus): SuiteAction => ({
     type: SUITE.TOR_STATUS,
+    payload,
+});
+
+/**
+ * Triggered by `@suite/tor-bootstrap`
+ * Set torBootstrap in suite reducer
+ * @returns
+ */
+export const updateTorBootstrap = (payload: any): SuiteAction => ({
+    type: SUITE.TOR_BOOTSTRAP,
     payload,
 });
 

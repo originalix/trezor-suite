@@ -2,7 +2,6 @@ import React from 'react';
 import styled from 'styled-components';
 
 import { Button, Progress, Image, variables } from '@trezor/components';
-import { TorStatus } from '@suite-types';
 import { Translation } from '@suite-components/Translation';
 
 const StyledImage = styled(Image)`
@@ -74,18 +73,24 @@ const ProgressMessage = styled.div`
     font-weight: ${variables.FONT_WEIGHT.MEDIUM};
 `;
 
-interface TorLoaderProps {
-    torStatus: TorStatus;
+interface TorProgressBarProps {
+    isTorError: boolean;
+    isTorDisabling: boolean;
     progress: number;
     disableTor: () => void;
 }
 
-export const TorLoader = ({ torStatus, progress, disableTor }: TorLoaderProps) => {
+export const TorProgressBar = ({
+    isTorError,
+    isTorDisabling,
+    progress,
+    disableTor,
+}: TorProgressBarProps) => {
     let message: 'TR_ENABLING_TOR' | 'TR_ENABLING_TOR_FAILED' | 'TR_DISABLING_TOR' =
         'TR_ENABLING_TOR';
-    if (torStatus === TorStatus.Error) {
+    if (isTorError) {
         message = 'TR_ENABLING_TOR_FAILED';
-    } else if (torStatus === TorStatus.Disabling) {
+    } else if (isTorDisabling) {
         message = 'TR_DISABLING_TOR';
     }
 
@@ -100,13 +105,10 @@ export const TorLoader = ({ torStatus, progress, disableTor }: TorLoaderProps) =
 
             <InfoWrapper>
                 <ProgressWrapper>
-                    <StyledProgress
-                        isRed={torStatus === TorStatus.Error}
-                        value={torStatus === TorStatus.Error ? 100 : progress}
-                    />
+                    <StyledProgress isRed={isTorError} value={isTorError ? 100 : progress} />
 
                     <ProgressMessage>
-                        {torStatus === TorStatus.Error ? (
+                        {isTorError ? (
                             <Translation id="TR_FAILED" />
                         ) : (
                             <Percentage>{progress} %</Percentage>
@@ -114,7 +116,7 @@ export const TorLoader = ({ torStatus, progress, disableTor }: TorLoaderProps) =
                     </ProgressMessage>
                 </ProgressWrapper>
 
-                {torStatus !== TorStatus.Disabling && (
+                {isTorDisabling && (
                     <DisableButton
                         data-test="@tor-loading-screen/disable-button"
                         variant="secondary"

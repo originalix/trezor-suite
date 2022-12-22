@@ -4,7 +4,7 @@ import { SuiteThemeVariant } from '@trezor/suite-desktop-api';
 import { variables } from '@trezor/components';
 import { SUITE, STORAGE } from '@suite-actions/constants';
 import { DISCOVERY } from '@wallet-actions/constants';
-import { Action, TrezorDevice, Lock, TorStatus } from '@suite-types';
+import { Action, TrezorDevice, Lock, TorStatus, TorBootstrap } from '@suite-types';
 import type { Locale } from '@suite-config/languages';
 import { isWeb } from '@suite-utils/env';
 import { getWindowWidth } from '@trezor/env-utils';
@@ -14,7 +14,12 @@ import type { OAuthServerEnvironment } from '@suite-types/metadata';
 import type { InvityServerEnvironment } from '@wallet-types/invity';
 import type { CoinjoinServerEnvironment } from '@wallet-types/coinjoin';
 import { createSelector } from '@reduxjs/toolkit';
-import { getIsTorEnabled, getIsTorLoading } from '@suite-utils/tor';
+import {
+    getIsTorDisabling,
+    getIsTorEnabled,
+    getIsTorError,
+    getIsTorLoading,
+} from '@suite-utils/tor';
 
 export interface SuiteRootState {
     suite: SuiteState;
@@ -71,6 +76,7 @@ export interface SuiteSettings {
 export interface SuiteState {
     online: boolean;
     torStatus: TorStatus;
+    torBootstrap: TorBootstrap | null;
     lifecycle: SuiteLifecycle;
     transport?: Partial<TransportInfo>;
     device?: TrezorDevice;
@@ -82,6 +88,7 @@ export interface SuiteState {
 const initialState: SuiteState = {
     online: true,
     torStatus: TorStatus.Disabled,
+    torBootstrap: null,
     lifecycle: { status: 'initial' },
     locks: [],
     flags: {
@@ -203,6 +210,10 @@ const suiteReducer = (state: SuiteState = initialState, action: Action): SuiteSt
                 draft.torStatus = action.payload;
                 break;
 
+            case SUITE.TOR_BOOTSTRAP:
+                draft.torBootstrap = action.payload;
+                break;
+
             case SUITE.ONION_LINKS:
                 draft.settings.torOnionLinks = action.payload;
                 break;
@@ -239,9 +250,13 @@ const suiteReducer = (state: SuiteState = initialState, action: Action): SuiteSt
 
 export const selectTorState = createSelector(
     (state: SuiteRootState) => state.suite.torStatus,
-    torStatus => ({
+    (state: SuiteRootState) => state.suite.torBootstrap,
+    (torStatus, torBootstrap) => ({
         isTorEnabled: getIsTorEnabled(torStatus),
         isTorLoading: getIsTorLoading(torStatus),
+        isTorError: getIsTorError(torStatus),
+        isTorDisabling: getIsTorDisabling(torStatus),
+        torBootstrap,
     }),
 );
 

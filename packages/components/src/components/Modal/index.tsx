@@ -165,7 +165,7 @@ const BackIcon = styled(Icon)`
     margin-left: auto;
 `;
 
-interface ModalProps {
+export interface ModalProps {
     children?: React.ReactNode;
     heading?: React.ReactNode;
     subheading?: React.ReactNode;

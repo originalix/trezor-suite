@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { desktopApi } from '@trezor/suite-desktop-api';
+import { desktopApi, BootstrapTorEvent } from '@trezor/suite-desktop-api';
 import { useActions } from '@suite-hooks';
 import { getIsTorDomain } from '@suite-utils/tor';
 import * as suiteActions from '@suite-actions/suiteActions';
@@ -9,8 +9,9 @@ import { TorStatusEvent } from 'packages/suite-desktop-api/lib/messages';
 import { TorStatus } from '@suite-types';
 
 export const useTor = () => {
-    const { updateTorStatus } = useActions({
+    const { updateTorStatus, updateTorBootstrap } = useActions({
         updateTorStatus: suiteActions.updateTorStatus,
+        updateTorBootstrap: suiteActions.updateTorBootstrap,
     });
 
     useEffect(() => {
@@ -23,11 +24,38 @@ export const useTor = () => {
 
         if (isDesktop()) {
             desktopApi.on('tor/status', (newStatus: TorStatusEvent) => {
-                updateTorStatus(
-                    newStatus.type === 'Enabled' ? TorStatus.Enabled : TorStatus.Disabled,
-                );
+                const isTorEnabled = newStatus.type === 'Enabled';
+                updateTorStatus(isTorEnabled ? TorStatus.Enabled : TorStatus.Disabled);
+                if (isTorEnabled) {
+                    // After getting Tor enabled we reset Tor bootstrap.
+                    updateTorBootstrap(null);
+                }
             });
             desktopApi.getTorStatus();
+
+            desktopApi.on('tor/bootstrap', (bootstrapEvent: BootstrapTorEvent) => {
+                if (bootstrapEvent.type === 'error') {
+                    updateTorStatus(TorStatus.Error);
+                }
+
+                if (bootstrapEvent.type === 'progress' && bootstrapEvent.progress.current) {
+                    updateTorBootstrap({
+                        current: bootstrapEvent.progress.current,
+                        total: bootstrapEvent.progress.total,
+                    });
+
+                    if (bootstrapEvent.progress.current === bootstrapEvent.progress.total) {
+                        updateTorStatus(TorStatus.Enabled);
+                    } else {
+                        updateTorStatus(TorStatus.Enabling);
+                    }
+                }
+            });
         }
-    }, [updateTorStatus]);
+
+        return () => {
+            desktopApi.removeAllListeners('tor/bootstrap');
+            desktopApi.removeAllListeners('tor/status');
+        };
+    }, [updateTorStatus, updateTorBootstrap]);
 };

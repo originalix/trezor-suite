@@ -58,3 +58,6 @@ export const getIsTorLoading = (torStatus: TorStatus) => {
             return false;
     }
 };
+
+export const getIsTorError = (torStatus: TorStatus) => torStatus === TorStatus.Error;
+export const getIsTorDisabling = (torStatus: TorStatus) => torStatus === TorStatus.Disabling;
