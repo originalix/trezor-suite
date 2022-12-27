@@ -4,6 +4,7 @@
 import { captureException } from '@sentry/electron';
 import { session } from 'electron';
 import { HandshakeTorModule } from 'packages/suite-desktop-api/lib/messages';
+import { BootstrapEvent } from 'packages/request-manager/lib/types';
 
 import TrezorConnect from '@trezor/connect';
 
@@ -58,28 +59,34 @@ const load = async ({ mainWindow, store }: Dependencies) => {
 
         if (shouldEnableTor === true) {
             setProxy(`socks5://${host}:${port}`);
-            tor.torController.on(
-                'bootstrap/event',
-                (bootstrapEvent: { progress: string; summary: string }) => {
-                    if (bootstrapEvent && bootstrapEvent.summary && bootstrapEvent.progress) {
-                        logger.info(
-                            'tor',
-                            `Bootstrap - ${bootstrapEvent.progress || ''}% - ${
-                                bootstrapEvent.summary || ''
-                            }`,
-                        );
+            // TODO(karliatto): make a function handlerTorBootstrapEvents
+            tor.torController.on('bootstrap/event', (bootstrapEvent: BootstrapEvent) => {
+                console.log('bootstrapEvent in tor module', bootstrapEvent);
+                if (bootstrapEvent.type === 'slow') {
+                    // TODO: do the thing!
+                    console.log('Emitting slow tor/bootstrap from tor module to renderer.');
+                    mainWindow.webContents.send('tor/bootstrap', {
+                        type: 'slow',
+                    });
+                }
+                if (bootstrapEvent.type === 'progress') {
+                    logger.info(
+                        'tor',
+                        `Bootstrap - ${bootstrapEvent.progress || ''}% - ${
+                            bootstrapEvent.summary || ''
+                        }`,
+                    );
 
-                        mainWindow.webContents.send('tor/bootstrap', {
-                            type: 'progress',
-                            summary: bootstrapEvent.summary,
-                            progress: {
-                                current: Number(bootstrapEvent.progress),
-                                total: 100,
-                            },
-                        });
-                    }
-                },
-            );
+                    mainWindow.webContents.send('tor/bootstrap', {
+                        type: 'progress',
+                        summary: bootstrapEvent.summary,
+                        progress: {
+                            current: Number(bootstrapEvent.progress),
+                            total: 100,
+                        },
+                    });
+                }
+            });
             try {
                 await tor.start();
             } catch (error) {
@@ -142,16 +149,18 @@ const load = async ({ mainWindow, store }: Dependencies) => {
         }
 
         // Once Tor is toggled it renderer should know the new status.
+        const status = await tor.status();
         mainWindow.webContents.send('tor/status', {
-            type: store.getTorSettings().running ? 'Enabled' : 'Disabled',
+            type: status.service ? 'Enabled' : 'Disabled',
         });
         return { success: true };
     });
 
-    ipcMain.on('tor/get-status', () => {
+    ipcMain.on('tor/get-status', async () => {
         logger.debug('tor', `Getting status (${store.getTorSettings().running ? 'ON' : 'OFF'})`);
+        const status = await tor.status();
         mainWindow.webContents.send('tor/status', {
-            type: store.getTorSettings().running ? 'Enabled' : 'Disabled',
+            type: status.service ? 'Enabled' : 'Disabled',
         });
     });
 

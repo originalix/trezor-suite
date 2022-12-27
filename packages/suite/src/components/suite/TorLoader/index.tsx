@@ -53,8 +53,6 @@ export const TorLoader = ({ callback, ModalWrapper }: TorLoadingScreenProps) => 
         let fakeProgress = 0;
 
         updateTorStatus(TorStatus.Disabling);
-
-        desktopApi.removeAllListeners('tor/bootstrap');
         desktopApi.toggleTor(false);
 
         // This is a total fake progress, otherwise it would be too fast for user.
@@ -90,6 +88,7 @@ export const TorLoader = ({ callback, ModalWrapper }: TorLoadingScreenProps) => 
             <TorProgressBar
                 isTorError={isTorError}
                 isTorDisabling={isTorDisabling}
+                isTorBootstrapSlow={!!torBootstrap?.isSlow} // TODO(karliatto): let's review if this should use !!, try to avoid it.
                 progress={progress}
                 disableTor={disableTor}
             />

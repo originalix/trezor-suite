@@ -5,10 +5,15 @@ export interface TorConnectionOptions {
     torDataDir: string;
 }
 
-export type BootstrapEvent = {
-    progress: string | undefined;
-    summary: string | undefined;
-};
+export type BootstrapEvent =
+    | {
+          type: 'slow';
+      }
+    | {
+          type: 'progress';
+          progress: string;
+          summary?: string;
+      };
 
 export type InterceptedEvent =
     | {

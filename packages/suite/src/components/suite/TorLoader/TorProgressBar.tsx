@@ -29,6 +29,10 @@ const MessageWrapper = styled.div`
     margin-bottom: 28px;
 `;
 
+const MessageSlowWrapper = styled(MessageWrapper)`
+    flex-direction: row;
+`;
+
 const DisableButton = styled(Button)`
     margin-left: 10px;
     border: 1px solid ${({ theme }) => theme.STROKE_GREY};
@@ -76,6 +80,7 @@ const ProgressMessage = styled.div`
 interface TorProgressBarProps {
     isTorError: boolean;
     isTorDisabling: boolean;
+    isTorBootstrapSlow: boolean;
     progress: number;
     disableTor: () => void;
 }
@@ -83,6 +88,7 @@ interface TorProgressBarProps {
 export const TorProgressBar = ({
     isTorError,
     isTorDisabling,
+    isTorBootstrapSlow,
     progress,
     disableTor,
 }: TorProgressBarProps) => {
@@ -116,7 +122,7 @@ export const TorProgressBar = ({
                     </ProgressMessage>
                 </ProgressWrapper>
 
-                {isTorDisabling && (
+                {!isTorDisabling && (
                     <DisableButton
                         data-test="@tor-loading-screen/disable-button"
                         variant="secondary"
@@ -126,6 +132,13 @@ export const TorProgressBar = ({
                     </DisableButton>
                 )}
             </InfoWrapper>
+
+            {isTorBootstrapSlow && (
+                <MessageSlowWrapper>
+                    <Translation id="TR_TOR_IS_SLOW_MESSAGE" /> &nbsp;
+                    <Translation id="TR_TOR_IS_SLOW_SUB_MESSAGE" />
+                </MessageSlowWrapper>
+            )}
         </>
     );
 };

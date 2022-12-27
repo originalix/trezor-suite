@@ -57,7 +57,7 @@ export type SuiteAction =
     | { type: typeof SUITE.SET_DEBUG_MODE; payload: Partial<DebugModeOptions> }
     | { type: typeof SUITE.ONLINE_STATUS; payload: boolean }
     | { type: typeof SUITE.TOR_STATUS; payload: TorStatus }
-    | { type: typeof SUITE.TOR_BOOTSTRAP; payload: TorBootstrap }
+    | { type: typeof SUITE.TOR_BOOTSTRAP; payload: TorBootstrap | null }
     | { type: typeof SUITE.ONION_LINKS; payload: boolean }
     | { type: typeof SUITE.LOCK_UI; payload: boolean }
     | ReturnType<typeof lockDevice>
@@ -164,7 +164,7 @@ export const updateTorStatus = (payload: TorStatus): SuiteAction => ({
  * Set torBootstrap in suite reducer
  * @returns
  */
-export const updateTorBootstrap = (payload: any): SuiteAction => ({
+export const updateTorBootstrap = (payload: TorBootstrap | null): SuiteAction => ({
     type: SUITE.TOR_BOOTSTRAP,
     payload,
 });

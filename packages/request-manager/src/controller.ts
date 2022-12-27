@@ -5,7 +5,7 @@ import { createTimeoutPromise } from '@trezor/utils';
 
 import { TorControlPort } from './torControlPort';
 import type { TorConnectionOptions, BootstrapEvent } from './types';
-import { BootstrapEventProgress, bootstrapParser } from './events/bootstrap';
+import { bootstrapParser, BOOTSTRAP_EVENT_PROGRESS } from './events/bootstrap';
 
 export class TorController extends EventEmitter {
     options: TorConnectionOptions;
@@ -14,6 +14,8 @@ export class TorController extends EventEmitter {
     maxTriesWaiting = 200;
     isCircuitEstablished = false;
     torIsDisabledWhileStarting: boolean;
+    timeBootstrapStartBeingSlow = 1000 * 1; // TODO(karliatto): this is just for dev, it should be after 5 seconds.
+    bootstrapSlowChecker?: NodeJS.Timeout;
 
     constructor(options: TorConnectionOptions) {
         super();
@@ -86,11 +88,48 @@ export class TorController extends EventEmitter {
         ];
     }
 
+    startBootstrapSlowChecker() {
+        console.log('startBootstrapSlowChecker');
+        if (this.bootstrapSlowChecker) {
+            clearTimeout(this.bootstrapSlowChecker);
+        }
+        console.log('Stating timeout to check that bootstrap is slow');
+        this.bootstrapSlowChecker = setTimeout(() => {
+            // TODO: send event that i
+            console.log('Sending slow bootstrap/event from request-manager controller');
+            this.emit('bootstrap/event', {
+                type: 'slow',
+            });
+        }, this.timeBootstrapStartBeingSlow);
+    }
+
+    // TODO(karliatto): create a method to clear timeout when successfully bootstrapped
+    stopBootstrapSlowChecker() {
+        clearTimeout(this.bootstrapSlowChecker);
+    }
+
+    successfullyConnected() {
+        this.isCircuitEstablished = true;
+        this.stopBootstrapSlowChecker();
+    }
+
     onMessageReceived(message: string) {
+        console.log('message', message);
         const bootstrap: BootstrapEvent[] = bootstrapParser(message);
+        // TODO(karliatto): let's identify what is the first message that says that bootstrap is starting so we can keep time
+        // and then use that time to compare or to start a process that will emit the slow event when it passes without it being
+        // finalized.
+        console.log('bootstrap', bootstrap);
         bootstrap.forEach(event => {
-            if (!event?.progress) return;
-            this.isCircuitEstablished = event.progress === BootstrapEventProgress.Done;
+            if (event.type !== 'progress') return;
+            if (event.progress === BOOTSTRAP_EVENT_PROGRESS.ConnectingToRelay) {
+                // TODO(karliatto): trigger slowness checker
+                // when we realize Tor bootstrap is slow we should let it know in the event
+                this.startBootstrapSlowChecker();
+            }
+            if (event.progress === BOOTSTRAP_EVENT_PROGRESS.Done) {
+                this.successfullyConnected();
+            }
             this.emit('bootstrap/event', event);
         });
     }
@@ -132,7 +171,7 @@ export class TorController extends EventEmitter {
     }
 
     status() {
-        return this.controlPort.ping();
+        return this.controlPort.ping() && this.isCircuitEstablished;
     }
 
     stopWhileLoading() {
