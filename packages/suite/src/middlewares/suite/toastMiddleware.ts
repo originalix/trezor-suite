@@ -24,6 +24,7 @@ const toastMiddleware =
 
         if (notificationsActions.addToast.match(action)) {
             const payload = { ...action.payload };
+            console.log('payload in toastMiddleware', payload);
             // assetType error is returned by @trezor/connect
             // we don't want to show this generic message in toast however the whole message is useful for logging
             // redact error message to empty string

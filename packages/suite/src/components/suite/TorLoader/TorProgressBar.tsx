@@ -103,7 +103,7 @@ export const TorProgressBar = ({
     return (
         <>
             <MessageWrapper>
-                <StyledImage image="TOR_ENABLING" />
+                <StyledImage image="TOR_LOGO" />
                 <Text>
                     <Translation id={message} />
                 </Text>

@@ -10,16 +10,15 @@ import { TorStatus } from '@suite-types';
 import { selectTorState } from '@suite-reducers/suiteReducer';
 
 export const useTor = () => {
-    const { updateTorStatus, updateTorBootstrap } = useActions({
+    const { updateTorStatus, setTorBootstrap, setTorBootstrapSlow } = useActions({
         updateTorStatus: suiteActions.updateTorStatus,
-        updateTorBootstrap: suiteActions.updateTorBootstrap,
+        setTorBootstrap: suiteActions.setTorBootstrap,
+        setTorBootstrapSlow: suiteActions.setTorBootstrapSlow,
     });
     const { torBootstrap } = useSelector(selectTorState);
 
     useEffect(() => {
-        const resetTorBootstrap = () => {
-            updateTorBootstrap(null);
-        };
+        console.log('useEffect for tor/status');
 
         if (isWeb()) {
             const isTorDomain = getIsTorDomain(getLocationHostname());
@@ -31,63 +30,39 @@ export const useTor = () => {
         if (isDesktop()) {
             desktopApi.on('tor/status', (newStatus: TorStatusEvent) => {
                 const isTorEnabled = newStatus.type === 'Enabled';
-                // TODO: handle that type could be for example BootstrapsIsSlow or Misbehaving
+                console.log('tor/status in useTor', newStatus);
+                // TODO(karliatto): handle that type could be for example BootstrapsIsSlow or Misbehaving
                 updateTorStatus(isTorEnabled ? TorStatus.Enabled : TorStatus.Disabled);
-                if (isTorEnabled) {
-                    // After getting Tor enabled we reset Tor bootstrap.
-                    resetTorBootstrap();
-                }
             });
             desktopApi.getTorStatus();
-
-            desktopApi.on('tor/bootstrap', (bootstrapEvent: BootstrapTorEvent) => {
-                console.log('bootstrapEvent in useTor', bootstrapEvent);
-                if (bootstrapEvent.type === 'error') {
-                    updateTorStatus(TorStatus.Error);
-                }
-
-                if (bootstrapEvent.type === 'slow') {
-                    // TODO: do the thing.
-                    console.log(
-                        'torBootstrap to be used as slow only to modify isSlow',
-                        torBootstrap,
-                    );
-                    if (torBootstrap) {
-                        updateTorBootstrap({
-                            ...torBootstrap,
-                            isSlow: true,
-                        });
-                    }
-                }
-
-                if (bootstrapEvent.type === 'progress' && bootstrapEvent.progress.current) {
-                    // TODO(karliatto): make this updating only one part of the state better than this!!
-                    if (torBootstrap) {
-                        updateTorBootstrap({
-                            ...torBootstrap,
-                            current: bootstrapEvent.progress.current,
-                            total: bootstrapEvent.progress.total,
-                        });
-                    } else {
-                        updateTorBootstrap({
-                            current: bootstrapEvent.progress.current,
-                            total: bootstrapEvent.progress.total,
-                            isSlow: false,
-                        });
-                    }
-
-                    if (bootstrapEvent.progress.current === bootstrapEvent.progress.total) {
-                        updateTorStatus(TorStatus.Enabled);
-                    } else {
-                        updateTorStatus(TorStatus.Enabling);
-                    }
-                }
-            });
         }
 
-        return () => {
-            desktopApi.removeAllListeners('tor/bootstrap');
-            desktopApi.removeAllListeners('tor/status');
-        };
-    }, [updateTorStatus, updateTorBootstrap, torBootstrap]);
+        return () => desktopApi.removeAllListeners('tor/status');
+    }, [updateTorStatus, torBootstrap]);
+
+    useEffect(() => {
+        desktopApi.on('tor/bootstrap', (bootstrapEvent: BootstrapTorEvent) => {
+            console.log('bootstrapEvent in useTor', bootstrapEvent);
+            if (bootstrapEvent.type === 'slow') {
+                // TODO: do the thing.
+                console.log('torBootstrap to be used as slow only to modify isSlow', torBootstrap);
+                setTorBootstrapSlow(true);
+            }
+
+            if (bootstrapEvent.type === 'progress' && bootstrapEvent.progress.current) {
+                setTorBootstrap({
+                    current: bootstrapEvent.progress.current,
+                    total: bootstrapEvent.progress.total,
+                });
+
+                if (bootstrapEvent.progress.current === bootstrapEvent.progress.total) {
+                    updateTorStatus(TorStatus.Enabled);
+                } else {
+                    updateTorStatus(TorStatus.Enabling);
+                }
+            }
+        });
+
+        return () => desktopApi.removeAllListeners('tor/bootstrap');
+    }, [updateTorStatus, setTorBootstrap, torBootstrap, setTorBootstrapSlow]);
 };

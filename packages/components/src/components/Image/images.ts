@@ -22,6 +22,7 @@ export const SVG_IMAGES = {
     ONBOARDING_WELCOME_BG: 'onboarding-welcome-bg.svg',
     HOURGLASS: 'hourglass.svg',
     WATCH: 'watch.svg',
+    TOR_LOGO: 'tor-logo.svg',
 } as const;
 
 export type PngImage = keyof typeof PNG_IMAGES;
@@ -57,8 +58,6 @@ export const PNG_IMAGES = {
     UNDERSTAND_2x: 'Understand@2x.png',
     WALLET: 'Wallet.png',
     WALLET_2x: 'Wallet@2x.png',
-    TOR_ENABLING: 'TorEnabling.png',
-    TOR_ENABLING_2x: 'TorEnabling@2x.png',
     COINJOIN_MESS: 'CoinjoinMess.png',
     DONT_DISCONNECT: 'DontDisconnect.png',
     DONT_DISCONNECT_2x: 'DontDisconnect@2x.png',

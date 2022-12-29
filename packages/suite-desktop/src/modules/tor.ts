@@ -61,10 +61,7 @@ const load = async ({ mainWindow, store }: Dependencies) => {
             setProxy(`socks5://${host}:${port}`);
             // TODO(karliatto): make a function handlerTorBootstrapEvents
             tor.torController.on('bootstrap/event', (bootstrapEvent: BootstrapEvent) => {
-                console.log('bootstrapEvent in tor module', bootstrapEvent);
                 if (bootstrapEvent.type === 'slow') {
-                    // TODO: do the thing!
-                    console.log('Emitting slow tor/bootstrap from tor module to renderer.');
                     mainWindow.webContents.send('tor/bootstrap', {
                         type: 'slow',
                     });

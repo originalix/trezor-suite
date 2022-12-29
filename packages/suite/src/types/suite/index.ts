@@ -113,7 +113,7 @@ export enum TorStatus {
 export interface TorBootstrap {
     current: number;
     total: number;
-    isSlow: boolean;
+    isSlow?: boolean;
 }
 
 export enum FirmwareType {

@@ -9,6 +9,7 @@ export interface NotificationViewProps {
     icon?: IconProps['icon'] | JSX.Element;
     message: ExtendedMessageDescriptor['id'];
     messageValues: ExtendedMessageDescriptor['values'];
+    subMessage?: ExtendedMessageDescriptor['id'];
     action?: {
         onClick: () => void;
         label: ExtendedMessageDescriptor['id'];

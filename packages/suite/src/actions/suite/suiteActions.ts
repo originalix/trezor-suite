@@ -21,7 +21,7 @@ import type {
     ButtonRequest,
     AppState,
 } from '@suite-types';
-import type { DebugModeOptions, AutodetectSettings } from '@suite-reducers/suiteReducer';
+import { DebugModeOptions, AutodetectSettings, selectTorState } from '@suite-reducers/suiteReducer';
 import type { TranslationKey } from '@suite-components/Translation/components/BaseTranslation';
 import { createAction } from '@reduxjs/toolkit';
 
@@ -159,19 +159,10 @@ export const updateTorStatus = (payload: TorStatus): SuiteAction => ({
     payload,
 });
 
-/**
- * Triggered by `@suite/tor-bootstrap`
- * Set torBootstrap in suite reducer
- * @returns
- */
-export const updateTorBootstrap = (payload: TorBootstrap | null): SuiteAction => ({
-    type: SUITE.TOR_BOOTSTRAP,
-    payload,
-});
-
 export const toggleTor =
     (shouldEnable: boolean) => async (dispatch: Dispatch, getState: GetState) => {
         const isTorLoading = getIsTorLoading(getState().suite.torStatus);
+        const { torBootstrap } = selectTorState(getState());
 
         if (isTorLoading) {
             return;
@@ -188,13 +179,23 @@ export const toggleTor =
             if (!res) return;
         }
 
+        // TODO(karliatto): we are moving this to be sent as event from tor module
         const progressStatus = shouldEnable ? TorStatus.Enabling : TorStatus.Disabling;
 
         dispatch(updateTorStatus(progressStatus));
 
+        if (shouldEnable && torBootstrap) {
+            // Reset Tor Bootstrap before starting it.
+            dispatch({
+                type: SUITE.TOR_BOOTSTRAP,
+                payload: null,
+            });
+        }
+
         const ipcResponse = await desktopApi.toggleTor(shouldEnable);
 
         if (ipcResponse.success) {
+            // TODO(karliatto): we move all the Tor status changing to Tor module
             const newStatus = shouldEnable ? TorStatus.Enabled : TorStatus.Disabled;
 
             dispatch(updateTorStatus(newStatus));
@@ -208,6 +209,8 @@ export const toggleTor =
         }
 
         if (!ipcResponse.success && ipcResponse.error) {
+            // TODO(karliatto): we move all the Tor status changing to Tor module
+
             const previousStatus = shouldEnable ? TorStatus.Disabled : TorStatus.Enabled;
 
             dispatch(updateTorStatus(previousStatus));
@@ -227,6 +230,64 @@ export const setOnionLinks = (payload: boolean): SuiteAction => ({
     type: SUITE.ONION_LINKS,
     payload,
 });
+
+/**
+ * Triggered by `@suite/tor-bootstrap`
+ * Set torBootstrap in suite reducer
+ * @returns
+ */
+export const updateTorBootstrap = (payload: TorBootstrap | null): SuiteAction => ({
+    type: SUITE.TOR_BOOTSTRAP,
+    payload,
+});
+
+export const setTorBootstrap =
+    (torBootstrap: TorBootstrap) => (dispatch: Dispatch, getState: GetState) => {
+        const { torBootstrap: previousTorBootstrap } = selectTorState(getState());
+
+        const payload: TorBootstrap = {
+            current: torBootstrap.current,
+            total: torBootstrap.total,
+            isSlow: previousTorBootstrap ? previousTorBootstrap.isSlow : false,
+        };
+
+        dispatch({
+            type: SUITE.TOR_BOOTSTRAP,
+            payload,
+        });
+    };
+
+export const setTorBootstrapSlow =
+    (isSlow: boolean) => (dispatch: Dispatch, getState: GetState) => {
+        const { torBootstrap: previousTorBootstrap } = selectTorState(getState());
+
+        if (!previousTorBootstrap) {
+            // Does not make sense to set bootstrap to slow when there is no bootstrap happening.
+            return;
+        }
+
+        if (isSlow && !previousTorBootstrap?.isSlow) {
+            dispatch(
+                notificationsActions.addToast({
+                    type: 'tor-is-slow',
+                    // TODO(karliatto): just for dev
+                    // autoClose: 1000 * 60 * 60,
+                    autoClose: false,
+                }),
+            );
+        }
+
+        const payload: TorBootstrap = {
+            current: previousTorBootstrap.current,
+            total: previousTorBootstrap.total,
+            isSlow,
+        };
+
+        dispatch({
+            type: SUITE.TOR_BOOTSTRAP,
+            payload,
+        });
+    };
 
 /**
  * Called from `suiteMiddleware`

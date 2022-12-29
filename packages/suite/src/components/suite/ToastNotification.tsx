@@ -54,6 +54,7 @@ const ToastNotification = ({
     icon,
     message,
     messageValues,
+    subMessage,
     action,
     variant,
     cancelable = true,
@@ -62,6 +63,8 @@ const ToastNotification = ({
 }: NotificationViewProps) => {
     const [isTall, setIsTall] = useState(false);
 
+    console.log('ToastNotification component');
+    console.log('icon', icon);
     const { closeNotification } = useActions({
         closeNotification: notificationsActions.close,
     });
@@ -80,6 +83,7 @@ const ToastNotification = ({
 
     const dataTestBase = `@toast/${type}`;
     const defaultIcon = icon ?? getNotificationIcon(variant);
+    console.log('defaultIcon', defaultIcon);
 
     const handleCancelClick = () => {
         closeNotification(id);
@@ -108,6 +112,12 @@ const ToastNotification = ({
                 <Message>
                     <Translation id={message} values={messageValues} />
                 </Message>
+
+                {subMessage && (
+                    <Message>
+                        <Translation id={subMessage} />
+                    </Message>
+                )}
 
                 {action?.position === 'bottom' && actionButton}
             </BodyWrapper>
