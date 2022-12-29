@@ -63,8 +63,6 @@ const ToastNotification = ({
 }: NotificationViewProps) => {
     const [isTall, setIsTall] = useState(false);
 
-    console.log('ToastNotification component');
-    console.log('icon', icon);
     const { closeNotification } = useActions({
         closeNotification: notificationsActions.close,
     });
@@ -83,7 +81,6 @@ const ToastNotification = ({
 
     const dataTestBase = `@toast/${type}`;
     const defaultIcon = icon ?? getNotificationIcon(variant);
-    console.log('defaultIcon', defaultIcon);
 
     const handleCancelClick = () => {
         closeNotification(id);

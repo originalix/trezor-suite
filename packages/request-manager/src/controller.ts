@@ -4,27 +4,69 @@ import path from 'path';
 import { createTimeoutPromise } from '@trezor/utils';
 
 import { TorControlPort } from './torControlPort';
-import type { TorConnectionOptions, BootstrapEvent } from './types';
+import {
+    TorConnectionOptions,
+    BootstrapEvent,
+    TorControllerStatus,
+    TOR_CONTROLLER_STATUS,
+} from './types';
 import { bootstrapParser, BOOTSTRAP_EVENT_PROGRESS } from './events/bootstrap';
 
 export class TorController extends EventEmitter {
     options: TorConnectionOptions;
     controlPort: TorControlPort;
+    bootstrapSlowChecker?: NodeJS.Timeout;
+    status: TorControllerStatus = TOR_CONTROLLER_STATUS.Stopped;
+    // Configurations
     waitingTime = 1000;
     maxTriesWaiting = 200;
-    isCircuitEstablished = false;
-    torIsDisabledWhileStarting: boolean;
-    timeBootstrapStartBeingSlow = 1000 * 1; // TODO(karliatto): this is just for dev, it should be after 5 seconds.
-    bootstrapSlowChecker?: NodeJS.Timeout;
+    timeBootstrapStartBeingSlow = 1000 * 5; // 5 seconds.
 
     constructor(options: TorConnectionOptions) {
         super();
         this.options = options;
-        this.torIsDisabledWhileStarting = false;
         this.controlPort = new TorControlPort(options, this.onMessageReceived.bind(this));
     }
 
-    getTorConfiguration(processId: number): string[] {
+    private getIsCircuitEstablished() {
+        // We rely on TOR_CONTROLLER_STATUS but check controlPort is actives as sanity check.
+        return this.controlPort.ping() && this.status === TOR_CONTROLLER_STATUS.CircuitEstablished;
+    }
+
+    private getIsStopped() {
+        return this.status === TOR_CONTROLLER_STATUS.Stopped;
+    }
+
+    private getIsBootstrapping() {
+        // We rely on TOR_CONTROLLER_STATUS but check controlPort is actives as sanity check.
+        return this.controlPort.ping() && this.status === TOR_CONTROLLER_STATUS.Bootstrapping;
+    }
+
+    private successfullyBootstrapped() {
+        this.status = TOR_CONTROLLER_STATUS.CircuitEstablished;
+        this.stopBootstrapSlowChecker();
+    }
+
+    private stopBootstrapSlowChecker() {
+        clearTimeout(this.bootstrapSlowChecker);
+    }
+
+    private startBootstrap() {
+        this.status = TOR_CONTROLLER_STATUS.Bootstrapping;
+        if (this.bootstrapSlowChecker) {
+            clearTimeout(this.bootstrapSlowChecker);
+        }
+        // When Bootstrap starts we wait time defined in timeBootstrapStartBeingSlow and if after that time,
+        // it has not being finalized, then we send slow event. We know that Bootstrap is going on since
+        // we received, at least, first Bootstrap events from ControlPort.
+        this.bootstrapSlowChecker = setTimeout(() => {
+            this.emit('bootstrap/event', {
+                type: 'slow',
+            });
+        }, this.timeBootstrapStartBeingSlow);
+    }
+
+    public getTorConfiguration(processId: number): string[] {
         const controlAuthCookiePath = path.join(this.options.torDataDir, 'control_auth_cookie');
         // https://github.com/torproject/tor/blob/bf30943cb75911d70367106af644d4273baaa85d/doc/man/tor.1.txt
         return [
@@ -88,58 +130,28 @@ export class TorController extends EventEmitter {
         ];
     }
 
-    startBootstrapSlowChecker() {
-        console.log('startBootstrapSlowChecker');
-        if (this.bootstrapSlowChecker) {
-            clearTimeout(this.bootstrapSlowChecker);
-        }
-        console.log('Stating timeout to check that bootstrap is slow');
-        this.bootstrapSlowChecker = setTimeout(() => {
-            // TODO: send event that i
-            console.log('Sending slow bootstrap/event from request-manager controller');
-            this.emit('bootstrap/event', {
-                type: 'slow',
-            });
-        }, this.timeBootstrapStartBeingSlow);
-    }
-
-    // TODO(karliatto): create a method to clear timeout when successfully bootstrapped
-    stopBootstrapSlowChecker() {
-        clearTimeout(this.bootstrapSlowChecker);
-    }
-
-    successfullyConnected() {
-        this.isCircuitEstablished = true;
-        this.stopBootstrapSlowChecker();
-    }
-
-    onMessageReceived(message: string) {
-        console.log('message', message);
+    public onMessageReceived(message: string) {
         const bootstrap: BootstrapEvent[] = bootstrapParser(message);
-        // TODO(karliatto): let's identify what is the first message that says that bootstrap is starting so we can keep time
-        // and then use that time to compare or to start a process that will emit the slow event when it passes without it being
-        // finalized.
-        console.log('bootstrap', bootstrap);
         bootstrap.forEach(event => {
             if (event.type !== 'progress') return;
             if (event.progress === BOOTSTRAP_EVENT_PROGRESS.ConnectingToRelay) {
-                // TODO(karliatto): trigger slowness checker
-                // when we realize Tor bootstrap is slow we should let it know in the event
-                this.startBootstrapSlowChecker();
+                // We consider that bootstrap has started when first event come from ControlPort.
+                // If we do not receive this first event, we can consider there is something going wrong and
+                // an error will be thrown when `maxTriesWaiting` is reached in `waitUntilAlive`.
+                this.startBootstrap();
             }
             if (event.progress === BOOTSTRAP_EVENT_PROGRESS.Done) {
-                this.successfullyConnected();
+                this.successfullyBootstrapped();
             }
             this.emit('bootstrap/event', event);
         });
     }
 
-    waitUntilAlive(): Promise<void> {
+    public waitUntilAlive(): Promise<void> {
         const errorMessages: string[] = [];
-        this.torIsDisabledWhileStarting = false;
-        this.isCircuitEstablished = false;
+        this.status = TOR_CONTROLLER_STATUS.Bootstrapping;
         const waitUntilResponse = async (triesCount: number): Promise<void> => {
-            if (this.torIsDisabledWhileStarting) {
+            if (this.getIsStopped()) {
                 // If TOR is starting and we want to cancel it.
                 return;
             }
@@ -151,7 +163,7 @@ export class TorController extends EventEmitter {
             try {
                 const isConnected = await this.controlPort.connect();
                 const isAlive = this.controlPort.ping();
-                if (isConnected && isAlive && this.isCircuitEstablished) {
+                if (isConnected && isAlive && this.getIsCircuitEstablished()) {
                     // It is running so let's not wait anymore.
                     return;
                 }
@@ -170,11 +182,19 @@ export class TorController extends EventEmitter {
         return waitUntilResponse(1);
     }
 
-    status() {
-        return this.controlPort.ping() && this.isCircuitEstablished;
+    public getStatus() {
+        return new Promise(resolve => {
+            if (this.getIsCircuitEstablished()) {
+                return resolve(TOR_CONTROLLER_STATUS.CircuitEstablished);
+            }
+            if (this.getIsBootstrapping()) {
+                return resolve(TOR_CONTROLLER_STATUS.Bootstrapping);
+            }
+            return resolve(TOR_CONTROLLER_STATUS.Stopped);
+        });
     }
 
-    stopWhileLoading() {
-        this.torIsDisabledWhileStarting = true;
+    public stop() {
+        this.status = TOR_CONTROLLER_STATUS.Stopped;
     }
 }

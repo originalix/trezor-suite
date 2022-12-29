@@ -110,7 +110,6 @@ const reducerActions = [
             },
         ],
     },
-    // TODO(karliatto): add tests for updateTorBootstrap action
     {
         description: `updateTorStatus (true/false)`,
         actions: [

@@ -179,11 +179,6 @@ export const toggleTor =
             if (!res) return;
         }
 
-        // TODO(karliatto): we are moving this to be sent as event from tor module
-        const progressStatus = shouldEnable ? TorStatus.Enabling : TorStatus.Disabling;
-
-        dispatch(updateTorStatus(progressStatus));
-
         if (shouldEnable && torBootstrap) {
             // Reset Tor Bootstrap before starting it.
             dispatch({
@@ -195,11 +190,6 @@ export const toggleTor =
         const ipcResponse = await desktopApi.toggleTor(shouldEnable);
 
         if (ipcResponse.success) {
-            // TODO(karliatto): we move all the Tor status changing to Tor module
-            const newStatus = shouldEnable ? TorStatus.Enabled : TorStatus.Disabled;
-
-            dispatch(updateTorStatus(newStatus));
-
             analytics.report({
                 type: EventType.SettingsTor,
                 payload: {
@@ -209,12 +199,6 @@ export const toggleTor =
         }
 
         if (!ipcResponse.success && ipcResponse.error) {
-            // TODO(karliatto): we move all the Tor status changing to Tor module
-
-            const previousStatus = shouldEnable ? TorStatus.Disabled : TorStatus.Enabled;
-
-            dispatch(updateTorStatus(previousStatus));
-
             dispatch(
                 notificationsActions.addToast({
                     type: 'tor-toggle-error',
@@ -270,8 +254,6 @@ export const setTorBootstrapSlow =
             dispatch(
                 notificationsActions.addToast({
                     type: 'tor-is-slow',
-                    // TODO(karliatto): just for dev
-                    // autoClose: 1000 * 60 * 60,
                     autoClose: false,
                 }),
             );

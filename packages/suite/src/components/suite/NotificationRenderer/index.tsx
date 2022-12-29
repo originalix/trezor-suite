@@ -52,10 +52,7 @@ const info = (
     values: ExtendedMessageDescriptor['values'] = {},
     icon?: NotificationViewProps['icon'],
     subMessage?: ExtendedMessageDescriptor['id'],
-) => {
-    console.log('icon in info simple component wrapper', icon);
-    return simple(View, notification, 'info', messageId, values, icon, subMessage);
-};
+) => simple(View, notification, 'info', messageId, values, icon, subMessage);
 
 const NotificationRenderer = ({ notification, render }: NotificationRendererProps) => {
     switch (notification.type) {
@@ -144,8 +141,6 @@ const NotificationRenderer = ({ notification, render }: NotificationRendererProp
         case 'tor-toggle-error':
             return error(render, notification, notification.error);
         case 'tor-is-slow':
-            // return info(render, notification, notification.error);
-            console.log('returning rendering tor-is-slow in NotificationRenderer');
             return info(
                 render,
                 notification,
