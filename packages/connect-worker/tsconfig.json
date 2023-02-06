@@ -1,0 +1,15 @@
+{
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+        "outDir": "libDev",
+        "types": [
+            "chrome",
+            "web",
+            "w3c-web-usb",
+            "jest"
+        ],
+        "rootDir": ".."
+    },
+    "include": ["./connect-worker"],
+    "references": [{ "path": "../connect" }]
+}
