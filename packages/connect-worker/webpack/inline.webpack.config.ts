@@ -13,7 +13,9 @@ const config: webpack.Configuration = {
     },
     output: {
         filename: '[name].js',
-        path: path.resolve(__dirname, '../build'),
+        // path: path.resolve(__dirname, '../build'),
+        // packages/connect-examples/extension-suite/vendor/trezor-connect-worker.js
+        path: path.resolve(__dirname, '../../connect-examples/extension-suite/vendor'),
         publicPath: './',
         library: 'TrezorConnect',
         libraryTarget: 'umd',

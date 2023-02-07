@@ -29,7 +29,7 @@ const call: CallMethod = async params => {
     // };
 
     // id++;
-    console.log('window-to-worker request id', id, params);
+    console.log('call method id', id, params);
 
     requestPromise = createDeferred(id);
 

@@ -46,26 +46,27 @@ importScripts('vendor/trezor-connect-worker.js');
 
 console.log('TrezorConnect', TrezorConnect);
 const runExample = async () => {
-    await TrezorConnect.default.init({
+    const test = await TrezorConnect.init({
         manifest: {
             appUrl: 'my app',
             email: 'app@myapp.meow',
         },
     });
+    console.log('test', test);
 
-    // // this event will be fired when bridge starts or stops or there is no bridge running
-    // TrezorConnect.on(TRANSPORT_EVENT, event => {
-    //     console.log(event);
-    // });
+    // this event will be fired when bridge starts or stops or there is no bridge running
+    TrezorConnect.on('TRANSPORT_EVENT', event => {
+        console.log(event);
+    });
 
-    // // this event will be fired when device connects, disconnects or changes
-    // TrezorConnect.on(DEVICE_EVENT, event => {
-    //     console.log(event);
-    // });
+    // this event will be fired when device connects, disconnects or changes
+    TrezorConnect.on('DEVICE_EVENT', event => {
+        console.log(event);
+    });
 
-    // const result = await TrezorConnect.getFeatures();
+    const result = await TrezorConnect.getFeatures();
 
-    // console.log(result);
+    console.log(result);
 
     // if (!result.success) {
     //     process.exit(1);

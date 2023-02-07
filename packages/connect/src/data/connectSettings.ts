@@ -96,7 +96,10 @@ export const corsValidator = (url?: string) => {
 };
 
 export const parseConnectSettings = (input: Partial<ConnectSettings> = {}) => {
+    console.log('parseConnectSettings');
+    console.log('input', input);
     const settings: ConnectSettings = { ...initialSettings };
+    console.log('settings', settings);
     if (Object.prototype.hasOwnProperty.call(input, 'debug')) {
         if (Array.isArray(input)) {
             // enable log with prefix
