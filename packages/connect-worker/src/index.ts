@@ -1,6 +1,6 @@
-// import * as TrezorConnect from '@trezor/connect';
 import EventEmitter from 'events';
 
+import TrezorConnect from '@trezor/connect/lib/index';
 import { factory } from '@trezor/connect/lib/factory';
 import {
     parseConnectSettings,
@@ -63,24 +63,24 @@ const uiResponse = (response: UiResponseEvent) => {
     // self.postMessage({ event: UI_EVENT, type, payload });
 };
 
-const TrezorConnect = factory({
-    eventEmitter,
-    manifest,
-    init,
-    call,
-    // @ts-expect-error
-    requestLogin: () => {},
-    uiResponse,
-    renderWebUSBButton: () => {
-        console.log('renderWebUSBButton');
-    },
-    disableWebUSB: () => {
-        console.log('disableWebUSB');
-    },
-    cancel: () => {},
-    // @ts-expect-error
-    dispose: () => {},
-});
+// const TrezorConnect = factory({
+//     eventEmitter,
+//     manifest,
+//     init,
+//     call,
+//     // @ts-expect-error
+//     requestLogin: () => {},
+//     uiResponse,
+//     renderWebUSBButton: () => {
+//         console.log('renderWebUSBButton');
+//     },
+//     disableWebUSB: () => {
+//         console.log('disableWebUSB');
+//     },
+//     cancel: () => {},
+//     // @ts-expect-error
+//     dispose: () => {},
+// });
 
 export default TrezorConnect;
 export * from '@trezor/connect/lib/exports';

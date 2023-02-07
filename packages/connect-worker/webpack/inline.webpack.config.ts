@@ -5,7 +5,7 @@ import TerserPlugin from 'terser-webpack-plugin';
 import prod from './prod.webpack.config';
 
 const config: webpack.Configuration = {
-    target: 'web',
+    target: 'webworker',
     mode: 'production',
     entry: {
         'trezor-connect-worker': path.resolve(__dirname, '../src/index.ts'),
@@ -25,6 +25,15 @@ const config: webpack.Configuration = {
     module: prod.module,
     resolve: prod.resolve,
     performance: prod.performance,
+    plugins: [
+        // provide fallback for global objects.
+        // resolve.fallback will not work since those objects are not imported as modules.
+        new webpack.ProvidePlugin({
+            Buffer: ['buffer', 'Buffer'],
+            Promise: ['es6-promise', 'Promise'],
+            process: 'process/browser',
+        }),
+    ],
 
     optimization: {
         minimizer: [
