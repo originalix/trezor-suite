@@ -243,14 +243,17 @@ const cancel = (error?: string) => {
 };
 
 const renderWebUSBButton = (_className?: string) => {
+    console.log('renderWebUSBButton');
     throw ERRORS.TypedError('Method_InvalidPackage');
 };
 
 const disableWebUSB = () => {
+    console.log('disableWebUSB');
     throw ERRORS.TypedError('Method_InvalidPackage');
 };
 
 const requestWebUSBDevice = () => {
+    console.log('requestWebUSBDevice');
     throw ERRORS.TypedError('Method_InvalidPackage');
 };
 

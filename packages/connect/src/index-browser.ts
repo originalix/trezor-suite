@@ -3,6 +3,7 @@ import { factory } from './factory';
 
 // Throw error from each method. use @trezor/connect-web instead.
 const fallback = () => {
+    console.log('fallback in index-browser');
     throw TypedError('Method_InvalidPackage');
 };
 

@@ -760,10 +760,12 @@ const onDeviceWordHandler = async (...[device, type, callback]: DeviceEvents['wo
  * @memberof Core
  */
 const onDevicePassphraseHandler = async (...[device, callback]: DeviceEvents['passphrase']) => {
+    console.log('onDevicePassphraseHandler function');
     // wait for popup handshake
     await getPopupPromise().promise;
     // create ui promise
     const uiPromise = createUiPromise(UI.RECEIVE_PASSPHRASE, device);
+    console.log('uiPromise', uiPromise);
     // request passphrase view
     postMessage(createUiMessage(UI.REQUEST_PASSPHRASE, { device: device.toMessageObject() }));
     // wait for passphrase

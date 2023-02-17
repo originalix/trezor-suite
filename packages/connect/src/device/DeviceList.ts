@@ -7,7 +7,7 @@ import TrezorLink, {
     Transport,
     TrezorDeviceInfoWithSession as DeviceDescriptor,
 } from '@trezor/transport';
-import fetch from 'cross-fetch';
+import fetch from 'node-fetch';
 import { ERRORS } from '../constants';
 import { TRANSPORT, DEVICE, TransportInfo } from '../events';
 import { DescriptorStream, DeviceDescriptorDiff } from './DescriptorStream';

@@ -21,9 +21,9 @@
     "sideEffects": false,
     "main": "lib/index",
     "browser": {
-        "./lib/index": "./lib/index-browser",
-        "./lib/utils/assets": "./lib/utils/assets-browser",
-        "./lib/workers/workers": "./lib/workers/workers-browser"
+        "./lib/index": "./lib/index",
+        "./lib/utils/assets": "./lib/utils/assets",
+        "./lib/workers/workers": "./lib/workers/workers"
     },
     "react-native": {
         "./lib/index": "./lib/index",
