@@ -5,7 +5,7 @@ import { resolveStaticPath } from '@trezor/utils';
 
 import { homescreensBW64x128, homescreensColor240x240 } from '@suite-constants/homescreens';
 import * as deviceSettingsActions from '@settings-actions/deviceSettingsActions';
-import { elementToHomescreen } from '@suite-utils/homescreen';
+import { imagePathToHex } from '@suite-utils/homescreen';
 import { AcquiredDevice } from '@suite-types';
 import { useActions } from '@suite-hooks';
 import { DeviceModel, getDeviceModel } from '@trezor/device-utils';
@@ -50,15 +50,21 @@ export const HomescreenGallery = ({ device, onConfirm }: HomescreenGalleryProps)
 
     if (!deviceModel) return null;
 
-    const setHomescreen = (image: AnyImageName) => {
-        const element = document.getElementById(image);
-        if (element instanceof HTMLImageElement) {
-            const hex = elementToHomescreen(element, deviceModel);
-            applySettings({ homescreen: hex });
-            if (onConfirm) {
-                onConfirm();
-            }
+    const setHomescreen = async (imagePath: string, image: AnyImageName) => {
+        const hex = await imagePathToHex(imagePath, deviceModel);
+
+        applySettings({ homescreen: hex });
+
+        if (onConfirm) {
+            onConfirm();
         }
+
+        analytics.report({
+            type: EventType.SettingsDeviceBackground,
+            payload: {
+                image,
+            },
+        });
     };
 
     return (
@@ -70,16 +76,9 @@ export const HomescreenGallery = ({ device, onConfirm }: HomescreenGalleryProps)
                             data-test={`@modal/gallery/bw_64x128/${image}`}
                             key={image}
                             id={image}
-                            // 2 eslint rules clashing
-                            onClick={() => {
-                                setHomescreen(image);
-                                analytics.report({
-                                    type: EventType.SettingsDeviceBackground,
-                                    payload: {
-                                        image,
-                                    },
-                                });
-                            }}
+                            onClick={e =>
+                                setHomescreen((e.target as HTMLImageElement).currentSrc, image)
+                            }
                             src={resolveStaticPath(`images/homescreens/BW_64x128/${image}.png`)}
                         />
                     ))}
@@ -92,16 +91,10 @@ export const HomescreenGallery = ({ device, onConfirm }: HomescreenGalleryProps)
                             data-test={`@modal/gallery/color_240x240/${image}`}
                             key={image}
                             id={image}
-                            // 2 eslint rules clashing
-                            onClick={() => {
-                                setHomescreen(image);
-                                analytics.report({
-                                    type: EventType.SettingsDeviceBackground,
-                                    payload: {
-                                        image,
-                                    },
-                                });
-                            }}
+                            onClick={e =>
+                                setHomescreen((e.target as HTMLImageElement).currentSrc, image)
+                            }
+                            src={resolveStaticPath(`images/homescreens/COLOR_240x240/${image}.jpg`)}
                         />
                     ))}
                 </BackgroundGalleryWrapper>
