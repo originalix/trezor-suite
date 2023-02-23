@@ -144,9 +144,7 @@ export const Homescreen = ({ isDeviceLocked }: HomescreenProps) => {
                         ref={fileInputElement}
                         type="file"
                         accept={deviceModelInformation[deviceModel].supports.join(', ')}
-                        onChange={e => {
-                            onUploadHomescreen(e.target.files);
-                        }}
+                        onChange={e => onUploadHomescreen(e.target.files)}
                     />
                     <Tooltip
                         maxWidth={285}
@@ -228,7 +226,7 @@ export const Homescreen = ({ isDeviceLocked }: HomescreenProps) => {
                     {validationError !== ImageValidationError.InvalidFormat && (
                         <Col>
                             <img
-                                width={`${deviceModelInformation[DeviceModel.T1].width}px`}
+                                width={`${deviceModelInformation[deviceModel].width}px`}
                                 alt="Custom homescreen"
                                 id="custom-image"
                                 src={customHomescreen}

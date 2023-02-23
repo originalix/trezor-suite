@@ -1,8 +1,6 @@
 /* eslint-disable no-bitwise */
 import { DeviceModel } from '@trezor/device-utils';
 
-import { analytics, EventType } from '@trezor/suite-analytics';
-
 export const deviceModelInformation = {
     [DeviceModel.T1]: { width: 128, height: 64, supports: ['.png', '.jpeg'] },
     [DeviceModel.TT]: { width: 240, height: 240, supports: ['.jpeg'] },
@@ -22,50 +20,41 @@ export const enum ImageValidationError {
 
 const range = (length: number) => [...Array(length).keys()];
 
-export const fileToDataUrl = (file: File): Promise<string> => {
-    const reader = new FileReader();
-    return new Promise((resolve, reject) => {
-        // @ts-expect-error
-        reader.onload = e => resolve(e.target.result);
-        reader.onerror = err => {
-            reject(err);
-        };
+export const fileToDataUrl = (file: File): Promise<string> =>
+    new Promise((resolve, reject) => {
+        const reader = new FileReader();
+
+        reader.onload = (e: ProgressEvent<FileReader>) => resolve(e.target?.result as string);
+        reader.onerror = err => reject(err);
         reader.readAsDataURL(file);
     });
-};
 
-export const fileToArrayBuffer = (file: File): Promise<ArrayBuffer> => {
-    const reader = new FileReader();
-    return new Promise((resolve, reject) => {
-        // @ts-expect-error
-        reader.onload = e => resolve(e.target.result);
-        reader.onerror = err => {
-            reject(err);
-        };
+export const fileToArrayBuffer = (file: File): Promise<ArrayBuffer> =>
+    new Promise((resolve, reject) => {
+        const reader = new FileReader();
+
+        reader.onload = (e: ProgressEvent<FileReader>) => resolve(e.target?.result as ArrayBuffer);
+        reader.onerror = err => reject(err);
         reader.readAsArrayBuffer(file);
     });
-};
 
-const dataUrlToImage = (dataUrl: string): Promise<HTMLImageElement> =>
+export const dataUrlToImage = (dataUrl: string): Promise<HTMLImageElement> =>
     new Promise((resolve, reject) => {
         const image = new Image();
 
-        image.onload = () => {
-            resolve(image);
-        };
-        image.onerror = e => {
-            reject(e);
-        };
+        image.onload = () => resolve(image);
+        image.onerror = e => reject(e);
         image.src = dataUrl;
     });
 
-const imageToCanvas = (image: HTMLImageElement, width: number, height: number) => {
+const imageToCanvas = (image: HTMLImageElement, deviceModel: DeviceModel) => {
+    const { width, height } = deviceModelInformation[deviceModel];
+
     const canvas = document.createElement('canvas');
     canvas.height = height;
     canvas.width = width;
 
-    // willReadFrequently - to optimize reading data url and image data
-    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    const ctx = canvas.getContext('2d');
     if (ctx == null) {
         throw new Error('2D context is null');
     }
@@ -76,13 +65,15 @@ const imageToCanvas = (image: HTMLImageElement, width: number, height: number) =
     return { canvas, ctx };
 };
 
-const toig = (w: number, h: number, imageData: ImageData) => {
-    const homescreen = range(h)
+const toig = (imageData: ImageData, deviceModel: DeviceModel) => {
+    const { width, height } = deviceModelInformation[deviceModel];
+
+    const homescreen = range(height)
         .map(j =>
-            range(w / 8)
+            range(width / 8)
                 .map(i => {
                     const bytestr = range(8)
-                        .map(k => (j * w + i * 8 + k) * 4)
+                        .map(k => (j * width + i * 8 + k) * 4)
                         .map(index => (imageData.data[index] === 0 ? '0' : '1'))
                         .join('');
                     return String.fromCharCode(parseInt(bytestr, 2));
@@ -100,8 +91,10 @@ const toig = (w: number, h: number, imageData: ImageData) => {
     return hex;
 };
 
-export const imageToImageData = (image: HTMLImageElement, width: number, height: number) => {
-    const { ctx } = imageToCanvas(image, width, height);
+export const imageToImageData = (image: HTMLImageElement, deviceModel: DeviceModel) => {
+    const { width, height } = deviceModelInformation[deviceModel];
+
+    const { ctx } = imageToCanvas(image, deviceModel);
 
     // no quality param as it resize image
     return ctx.getImageData(0, 0, width, height);
@@ -128,7 +121,7 @@ export const isValidImageHeight = (image: HTMLImageElement, deviceModel: DeviceM
     return image.height === height;
 };
 
-const isProgressiveJPEG = (buffer: ArrayBuffer, deviceModel: DeviceModel) => {
+const isProgressiveJPG = (buffer: ArrayBuffer, deviceModel: DeviceModel) => {
     if (deviceModel !== DeviceModel.TT) {
         return false;
     }
@@ -153,8 +146,7 @@ const isValidImageSize = (file: File, deviceModel: DeviceModel) => {
 };
 
 export const validateImageColors = (origImage: HTMLImageElement, deviceModel: DeviceModel) => {
-    const { width, height } = deviceModelInformation[deviceModel];
-    const imageData = imageToImageData(origImage, width, height);
+    const imageData = imageToImageData(origImage, deviceModel);
 
     if ([DeviceModel.T1, DeviceModel.TR].includes(deviceModel)) {
         try {
@@ -209,8 +201,6 @@ export const validateImage = async (file: File, deviceModel: DeviceModel) => {
 };
 
 export const imagePathToHex = async (imagePath: string, deviceModel: DeviceModel) => {
-    const { width, height } = deviceModelInformation[deviceModel];
-
     const response = await fetch(imagePath);
 
     let hex;
@@ -225,10 +215,10 @@ export const imagePathToHex = async (imagePath: string, deviceModel: DeviceModel
 
         const element = await dataUrlToImage(URL.createObjectURL(blob));
 
-        const { canvas, ctx } = imageToCanvas(element, width, height);
+        const { canvas, ctx } = imageToCanvas(element, deviceModel);
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
-        hex = toig(width, height, imageData);
+        hex = toig(imageData, deviceModel);
     }
 
     return hex;
