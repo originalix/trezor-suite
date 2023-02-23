@@ -5207,6 +5207,14 @@ export default defineMessages({
         id: 'IMAGE_VALIDATION_ERROR_INVALID_WIDTH',
         defaultMessage: 'Invalid width.',
     },
+    IMAGE_VALIDATION_ERROR_INVALID_SIZE: {
+        id: 'IMAGE_VALIDATION_ERROR_INVALID_SIZE',
+        defaultMessage: 'Invalid size.',
+    },
+    IMAGE_VALIDATION_ERROR_PROGRESSIVE_JPG: {
+        id: 'IMAGE_VALIDATION_ERROR_PROGRESSIVE_JPG',
+        defaultMessage: 'Progressive JPG image format is not supported.',
+    },
     IMAGE_VALIDATION_ERROR_UNEXPECTED_ALPHA: {
         id: 'IMAGE_VALIDATION_ERROR_UNEXPECTED_ALPHA',
         defaultMessage: 'Invalid image format. It must not contain transparencies.',
