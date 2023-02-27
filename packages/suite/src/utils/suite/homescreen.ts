@@ -121,7 +121,7 @@ export const isValidImageHeight = (image: HTMLImageElement, deviceModel: DeviceM
     return image.height === height;
 };
 
-const isProgressiveJPG = (buffer: ArrayBuffer, deviceModel: DeviceModel) => {
+export const isProgressiveJPG = (buffer: ArrayBuffer, deviceModel: DeviceModel) => {
     if (deviceModel !== DeviceModel.TT) {
         return false;
     }
@@ -137,7 +137,7 @@ const isProgressiveJPG = (buffer: ArrayBuffer, deviceModel: DeviceModel) => {
     return false;
 };
 
-const isValidImageSize = (file: File, deviceModel: DeviceModel) => {
+export const isValidImageSize = (file: File, deviceModel: DeviceModel) => {
     if (deviceModel !== DeviceModel.TT) {
         return true;
     }
