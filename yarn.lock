@@ -1642,6 +1642,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime@npm:^7.18.0":
+  version: 7.21.0
+  resolution: "@babel/runtime@npm:7.21.0"
+  dependencies:
+    regenerator-runtime: ^0.13.11
+  checksum: 7b33e25bfa9e0e1b9e8828bb61b2d32bdd46b41b07ba7cb43319ad08efc6fda8eb89445193e67d6541814627df0ca59122c0ea795e412b99c5183a0540d338ab
+  languageName: node
+  linkType: hard
+
 "@babel/template@npm:^7.0.0, @babel/template@npm:^7.12.7, @babel/template@npm:^7.18.10, @babel/template@npm:^7.20.7, @babel/template@npm:^7.3.3":
   version: 7.20.7
   resolution: "@babel/template@npm:7.20.7"
@@ -7830,6 +7839,7 @@ __metadata:
     "@trezor/transport-native": "workspace:*"
     babel-jest: ^26.6.3
     babel-plugin-transform-remove-console: ^6.9.4
+    basil-ws-flipper: ^0.2.8
     expo: 48.0.1
     expo-barcode-scanner: ^12.3.1
     expo-clipboard: ^4.1.1
@@ -11462,6 +11472,16 @@ __metadata:
     mixin-deep: ^1.2.0
     pascalcase: ^0.1.1
   checksum: a4a146b912e27eea8f66d09cb0c9eab666f32ce27859a7dfd50f38cd069a2557b39f16dba1bc2aecb3b44bf096738dd207b7970d99b0318423285ab1b1994edd
+  languageName: node
+  linkType: hard
+
+"basil-ws-flipper@npm:^0.2.8":
+  version: 0.2.8
+  resolution: "basil-ws-flipper@npm:0.2.8"
+  dependencies:
+    "@babel/runtime": ^7.18.0
+    lodash: ^4.17.21
+  checksum: a28de72b02af949230ae5639a065a85bb807f1ef1cab6887748086d45e2e9979a4b3811fe253f3e012b43ff39e66dabfda5afe74072cb6061747c8f0b4ccbeb9
   languageName: node
   linkType: hard
 
