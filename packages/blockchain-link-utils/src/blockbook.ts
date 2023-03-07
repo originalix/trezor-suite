@@ -8,7 +8,9 @@ import type {
     Address,
     AccountAddresses,
     AccountInfo,
+    InternalTransfer,
 } from '@trezor/blockchain-link-types';
+
 import type {
     ServerInfo,
     AccountInfo as BlockbookAccountInfo,
@@ -83,12 +85,55 @@ export const filterTokenTransfers = (
         });
 };
 
+export const filterEthereumInternalTransfers = (
+    address: string,
+    ethereumSpecific: BlockbookTransaction['ethereumSpecific'],
+): InternalTransfer[] => {
+    const transfers = ethereumSpecific?.internalTransfers;
+
+    // neither addresses or transfers are missing
+    if (!address || !transfers?.length) {
+        return [];
+    }
+
+    return (
+        transfers
+            // type 1 and 2 are filtered out (contract creating and destruction)
+            .filter(
+                transfer => transfer.type === 0 && [transfer.from, transfer.to].includes(address),
+            )
+            .map(transfer => {
+                const isIncoming = transfer.from === address;
+                const isOutgoing = transfer.to === address;
+
+                let type: InternalTransfer['type'];
+                if (isIncoming && isOutgoing) {
+                    type = 'self';
+                } else if (isIncoming) {
+                    type = 'sent';
+                } else {
+                    type = 'recv';
+                }
+
+                return {
+                    type,
+                    amount: transfer.value,
+                    from: transfer.from,
+                    to: transfer.to,
+                };
+            })
+    );
+};
+
 // Lighter version of AccountAddresses for tx classification
 type TransformAddresses = {
     used: { address: string }[];
     unused: { address: string }[];
     change: { address: string }[];
 };
+
+export const isTxFailed = (tx: BlockbookTransaction) =>
+    !(!tx.blockHeight || tx.blockHeight < 0) && tx.ethereumSpecific?.status === 0;
 
 export const transformTransaction = (
     descriptor: string,
@@ -111,6 +156,7 @@ export const transformTransaction = (
     const myTotalOutput = myOutputs.reduce(sumVinVout, 0);
 
     const myTokens = filterTokenTransfers(myAddresses, tx.tokenTransfers);
+    const myInternalTransfers = filterEthereumInternalTransfers(descriptor, tx.ethereumSpecific);
 
     const isNonChangeOutput = (o: VinVout) =>
         addresses ? filterTargets(addresses.change, tx.vout).indexOf(o) < 0 : true;
@@ -154,19 +200,27 @@ export const transformTransaction = (
             const intentionalOutputs = outputs.filter(isNonChangeOutput);
             targets = intentionalOutputs.length ? intentionalOutputs : outputs;
         }
-    } else if (myOutputs.length || myTokens.length) {
-        // Some output (or token) is mine -> receive
-
+    } else if (myOutputs.length || myTokens.length || myInternalTransfers.length) {
         type = 'recv';
         amount = myTotalOutput.toString();
         targets = myOutputs;
+
+        if ([...myTokens, ...myInternalTransfers].find(t => t.type === 'sent')) {
+            type = 'sent';
+        } else if (
+            !myOutputs.length &&
+            [...myTokens, ...myInternalTransfers].find(t => t.type !== 'recv')
+        ) {
+            type = 'self';
+        }
     } else {
         // No input or output is mine -> unknown
-
         type = 'unknown';
         amount = tx.value;
         targets = [];
     }
+
+    type = isTxFailed(tx) ? 'failed' : type;
 
     const rbf = inputs.find(i => typeof i.sequence === 'number' && i.sequence < 0xffffffff - 1)
         ? true
@@ -203,6 +257,7 @@ export const transformTransaction = (
 
         targets: targets.filter(t => typeof t === 'object').map(t => transformTarget(t, myOutputs)),
         tokens: myTokens,
+        internalTransfers: myInternalTransfers,
         rbf,
         ethereumSpecific: tx.ethereumSpecific,
         details: {

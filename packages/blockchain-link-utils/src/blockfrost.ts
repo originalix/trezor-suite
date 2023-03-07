@@ -270,6 +270,7 @@ export const transformTransaction = (
         fee,
         targets: targets.map(t => transformTarget(t, incoming)),
         tokens,
+        internalTransfers: [],
         cardanoSpecific: {
             subtype: getSubtype(blockfrostTxData),
             withdrawal,

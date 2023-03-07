@@ -43,6 +43,13 @@ export interface TokenTransfer {
     to?: string;
 }
 
+export interface InternalTransfer {
+    type: 'sent' | 'recv' | 'self';
+    amount: string;
+    from?: string;
+    to?: string;
+}
+
 export interface Target {
     n: number;
     addresses?: string[];
@@ -106,6 +113,7 @@ export interface Transaction {
     tokens: TokenTransfer[];
     rbf?: boolean;
     ethereumSpecific?: BlockbookTransaction['ethereumSpecific'];
+    internalTransfers: InternalTransfer[];
     cardanoSpecific?: {
         subtype:
             | 'withdrawal'
