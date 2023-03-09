@@ -15,6 +15,7 @@ import { TypedValidationRules } from '@wallet-types/form';
 const Wrapper = styled.div`
     display: flex;
     width: 100%;
+    gap: 10px;
 
     ${variables.SCREEN_QUERY.BELOW_LAPTOP} {
         flex-direction: column;
@@ -28,27 +29,16 @@ const Col = styled.div<{ singleCol?: boolean }>`
     ${({ singleCol }) =>
         singleCol &&
         css`
-            max-width: 270px;
-
             ${variables.SCREEN_QUERY.BELOW_LAPTOP} {
                 max-width: 100%;
             }
         `}
 `;
 
-const Spacer = styled.div`
-    display: flex;
-    width: 24px;
-
-    ${variables.SCREEN_QUERY.BELOW_LAPTOP} {
-        display: none;
-    }
-`;
-
 const StyledInput = styled(Input)`
     display: flex;
     flex: 1;
-    min-width: 270px;
+    width: 100%;
 `;
 
 const Units = styled.div`
@@ -201,7 +191,7 @@ export const CustomFee = ({
     };
 
     return (
-        <div>
+        <>
             <Wrapper>
                 {useFeeLimit ? (
                     <>
@@ -222,8 +212,6 @@ export const CustomFee = ({
                                 bottomText={<InputError error={feeLimitError} />}
                             />
                         </Col>
-
-                        <Spacer />
                     </>
                 ) : (
                     <input type="hidden" name={FEE_LIMIT} ref={register()} />
@@ -252,6 +240,6 @@ export const CustomFee = ({
                     <Translation id="TR_FEE_ROUNDING_WARNING" />
                 </Note>
             )}
-        </div>
+        </>
     );
 };
