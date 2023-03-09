@@ -122,13 +122,11 @@ export const confirmationInterval = (
         };
 
         const timeoutFn = async () => {
-            logger.log(
-                `Setting confirmation interval for ~~${input.outpoint}~~. Delay ${intervalDelay}ms`,
-            );
+            const delay = Math.max(intervalDelay - requestLatency, 0);
+            logger.log(`Setting confirmation interval for ~~${input.outpoint}~~. Delay ${delay}ms`);
 
             try {
-                const delay = Math.max(intervalDelay - requestLatency, 0);
-                const start = Date.now();
+                const start = Date.now() + delay;
                 await confirmInput(round, input, delay, {
                     ...options,
                     signal: controller.signal,
