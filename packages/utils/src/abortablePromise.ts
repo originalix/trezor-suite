@@ -1,84 +1,69 @@
-/* eslint-disable max-classes-per-file, no-underscore-dangle */
+/* eslint-disable no-underscore-dangle */
 // from https://github.com/zzdjk6/simple-abortable-promise
 
-// When abort happens, this error will be throw
-export class AbortError extends Error {
-    constructor(message = 'Aborted') {
-        super(message);
-        this.name = 'AbortError';
-    }
-}
-
 // General interface of Abortable
-export interface Abortable {
+interface Abortable {
     abort: (reason?: string) => void;
     readonly abortReason?: string;
 }
 
 // The executor function should be passed to the constructor when create a Promise
 interface ExecutorFunction<T> {
-    (resolve: (value?: PromiseLike<T> | T) => void, reject: (reason?: any) => void): void;
+    (resolve: (value: T | 'Aborted') => void): void;
 }
 
 // The executor function should be passed to the constructor when create a AbortablePromise
 interface AbortableExecutorFunction<T> {
-    (
-        resolve: (value?: PromiseLike<T> | T) => void,
-        reject: (reason?: any) => void,
-        abortController: AbortSignal,
-    ): void;
+    (resolve: (value: T) => void, abortController: AbortSignal): void;
 }
 
 // AbortablePromise is a subclass of Promise that implements Abortable interface
 export class AbortablePromise<T> extends Promise<T> implements Abortable {
-    // Method definition `.abort()`
     public abort: Abortable['abort'];
 
     // Getter to access abort reason
-    public get abortReason(): string | undefined {
+    public get abortReason() {
         return this._abortReason;
     }
 
     // Internal store of abort reason
     private _abortReason?: string;
 
-    // Constructor, note we can provide 3 args: resolve, reject, abortSignal
+    // Constructor, note we can provide 2 args: resolve,  abortSignal
     constructor(
         executor: AbortableExecutorFunction<T>,
-        // optionally custom abortController instance
-        abortControllerParam?: AbortController,
+        // optionally custom also signal from above
+        signal?: AbortSignal,
     ) {
-        const abortController = abortControllerParam || new AbortController();
-        const abortSignal = abortController.signal;
+        // todo:
+        // looks like that constructor is called twice, not sure why
+
+        if (signal) {
+            signal.onabort = () => {
+                this.abort('Aborted');
+            };
+        }
+
+        const abortController = new AbortController();
 
         // This is the executor function to be passed to the superclass - Promise
-        const normalExecutor: ExecutorFunction<T> = (resolve, reject) => {
-            abortSignal.addEventListener('abort', () => {
-                reject(new AbortError(this.abortReason));
+        const normalExecutor: ExecutorFunction<T> = resolve => {
+            abortController.signal.addEventListener('abort', () => {
+                const reason = 'Aborted' as const;
+                resolve(reason);
             });
 
-            executor(resolve, reject, abortSignal);
+            executor(resolve, abortController.signal);
         };
-        // @ts-expect-error ?
+        // @ts-expect-error
         super(normalExecutor);
 
         // Bind the abort method
         this.abort = reason => {
             this._abortReason = reason || 'Aborted';
-            abortController.abort();
+            abortController.abort(reason);
         };
     }
-
-    // Wrap other Promise instances to AbortablePromise
-    // eslint-disable-next-line @typescript-eslint/no-shadow
-    static from = <T>(promise: Promise<T>): AbortablePromise<T> => {
-        // If promise is already an AbortablePromise, return it directly
-        if (promise instanceof AbortablePromise) {
-            return promise;
-        }
-
-        return new AbortablePromise<T>((resolve, reject) => {
-            promise.then(resolve).catch(reject);
-        });
-    };
 }
+
+AbortablePromise.prototype.constructor = Promise;
