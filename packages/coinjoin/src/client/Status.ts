@@ -111,11 +111,11 @@ export class Status extends EventEmitter {
         if (!this.enabled) return;
 
         const nearestDeadline = findNearestDeadline(this.rounds);
-        // TODO: add timeout randomness?
+        const defaultTimeout = STATUS_TIMEOUT[this.mode];
         const timeout =
             this.mode !== 'idle' && nearestDeadline > 0
-                ? Math.min(nearestDeadline, STATUS_TIMEOUT[this.mode])
-                : STATUS_TIMEOUT[this.mode];
+                ? Math.min(nearestDeadline, defaultTimeout)
+                : defaultTimeout;
         this.timestamp = Date.now();
         this.nextTimestamp = this.timestamp + timeout;
 
