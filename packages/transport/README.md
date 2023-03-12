@@ -15,8 +15,6 @@ _You probably don't want to use this package directly._ For communication with T
 -   exposing single API for various transport methods:
     -   Trezor Bridge
     -   WebUSB
-    -   Trezor Bridge (web, node)
-    -   WebUSB (web)
 -   Create and expose typescript definitions based on protobuf definitions.
 
 ## From Protobuf to TypeScript ~~and Flow~~
