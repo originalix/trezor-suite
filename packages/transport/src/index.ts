@@ -26,6 +26,9 @@ export * as Messages from './types/messages';
 // browser + node
 export { BridgeTransport } from './transports/bridge';
 
+// node only
+export { NodeUsbTransport } from './transports/nodeusb';
+
 // browser (chrome-like) only
 export { WebUsbTransport } from './transports/webusb';
 

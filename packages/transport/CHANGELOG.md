@@ -2,6 +2,12 @@
 
 -   chore(connect;transport): connect.init add transports param; rename transports
 
+# 2.0.0
+
+-   Added: nodeusb transport
+-   Reworked: webusb transport, sharedworker
+-   Removed: FallbackTransport
+
 # 1.1.7
 
 -   Code cleanup, sharing constants with @trezor/connect
