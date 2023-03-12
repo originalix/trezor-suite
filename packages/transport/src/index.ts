@@ -1,8 +1,3 @@
-import BridgeTransportV2 from './bridge/v2';
-import LowlevelTransportWithSharedConnections from './lowlevel/withSharedConnections';
-import FallbackTransport from './fallback';
-import WebUsbPlugin from './lowlevel/webusb';
-
 // Long.js needed to make protobuf encoding work with numbers over Number.MAX_SAFE_INTEGER
 // Docs claim that it should be enough to only install this dependency and it will be required automatically
 // see: https://github.com/protobufjs/protobuf.js/#compatibility
@@ -11,22 +6,35 @@ import WebUsbPlugin from './lowlevel/webusb';
 import * as protobuf from 'protobufjs/light';
 import * as Long from 'long';
 
+import * as COMMON_ERRORS from './errors';
+import * as SESSION_ERRORS from './sessions/errors';
+import * as TRANSPORT_ERRORS from './transports/errors';
+import * as INTERFACE_ERRORS from './interfaces/errors';
+
 protobuf.util.Long = Long;
 protobuf.configure();
 
-export type {
-    Transport,
-    AcquireInput,
-    TrezorDeviceInfoWithSession,
-    MessageFromTrezor,
-} from './types';
-export { TREZOR_DESCS } from './constants';
+export type { MessageFromTrezor, Descriptor } from './types';
+export { TREZOR_USB_DESCRIPTORS } from './constants';
 
-export { Messages } from './types';
+export { Transport, TRANSPORT } from './transports/abstract';
 
-export default {
-    BridgeV2: BridgeTransportV2,
-    Fallback: FallbackTransport,
-    Lowlevel: LowlevelTransportWithSharedConnections,
-    WebUsb: WebUsbPlugin,
+// messages are exported but there is no real need to use them elsewhere
+// transports have reference to this already
+export * as Messages from './types/messages';
+
+// browser + node
+export { BridgeTransport } from './transports/bridge';
+
+// browser (chrome-like) only
+export { WebUsbTransport } from './transports/webusb';
+
+export { SessionsBackground } from './sessions/background';
+export { SessionsClient } from './sessions/client';
+
+export const TRANSPORT_ERROR = {
+    ...SESSION_ERRORS,
+    ...TRANSPORT_ERRORS,
+    ...COMMON_ERRORS,
+    ...INTERFACE_ERRORS,
 };

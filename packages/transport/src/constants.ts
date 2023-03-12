@@ -1,4 +1,14 @@
-export const TREZOR_DESCS = [
+// protocol const
+export const MESSAGE_HEADER_BYTE = 0x23;
+export const HEADER_SIZE = 1 + 1 + 4 + 2;
+export const BUFFER_SIZE = 63;
+
+// usb const
+export const CONFIGURATION_ID = 1;
+export const INTERFACE_ID = 0;
+export const ENDPOINT_ID = 1;
+export const T1_HID_VENDOR = 0x534c;
+export const TREZOR_USB_DESCRIPTORS = [
     // TREZOR v1
     // won't get opened, but we can show error at least
     { vendorId: 0x534c, productId: 0x0001 },
