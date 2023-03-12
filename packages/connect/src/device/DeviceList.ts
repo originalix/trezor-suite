@@ -8,7 +8,7 @@ import {
     BridgeTransport,
     WebUsbTransport,
     Transport,
-    TrezorDeviceInfoWithSession as DeviceDescriptor,
+    // TrezorDeviceInfoWithSession as DeviceDescriptor,
     TRANSPORT,
     Descriptor,
     TRANSPORT_ERROR,
