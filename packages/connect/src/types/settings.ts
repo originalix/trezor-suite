@@ -17,7 +17,7 @@ export interface ConnectSettings {
     popup?: boolean;
     transportReconnect?: boolean;
     webusb?: boolean; // deprecated
-    transports?: Transport['name'][];
+    transports?: (Transport['name'] | Transport)[];
     pendingTransportEvent?: boolean;
     lazyLoad?: boolean;
     interactionTimeout?: number;
@@ -36,3 +36,11 @@ export interface ConnectSettings {
     timestamp: number;
     proxy?: Proxy;
 }
+
+// todo: not used now, depends on review outcome, might be removed
+export const isTransportInterface = (
+    transport: Transport['name'] | Transport,
+): transport is Transport => {
+    if (!transport) return false;
+    return (transport as Transport).name !== undefined;
+};

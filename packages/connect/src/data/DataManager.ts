@@ -8,7 +8,7 @@ import { parseFirmware } from './firmwareInfo';
 import { parseBridgeJSON } from './transportInfo';
 import { config } from './config';
 
-import type { ConnectSettings } from '../types';
+import { ConnectSettings } from '../types';
 
 type AssetCollection = { [key: string]: JSON };
 
@@ -53,7 +53,7 @@ export class DataManager {
         if (this.settings.popup && this.settings.env !== 'webextension') {
             // allow all but WebUsbTransport
             this.settings.transports = this.settings.transports?.filter(
-                (transport: string) => transport !== 'WebUsbTransport',
+                transport => transport !== 'WebUsbTransport',
             );
         }
 
