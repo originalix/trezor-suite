@@ -1,55 +1,45 @@
-export * as Messages from './messages';
+import * as Messages from './messages';
+import * as SESSION_ERROR from '../sessions/errors';
+import * as INTERFACE_ERROR from '../interfaces/errors';
+import * as TRANSPORT_ERROR from '../transports/errors';
 
-// does not have session
-export type TrezorDeviceInfo = {
-    path: string;
+export type AnyError =
+    | (typeof TRANSPORT_ERROR)[keyof typeof TRANSPORT_ERROR]
+    | (typeof TRANSPORT_ERROR)[keyof typeof TRANSPORT_ERROR]
+    | (typeof SESSION_ERROR)[keyof typeof SESSION_ERROR]
+    | (typeof INTERFACE_ERROR)[keyof typeof INTERFACE_ERROR];
+
+export type MessageFromTrezor = {
+    type: keyof Messages.MessageType;
+    message: Record<string, unknown>;
 };
 
-export type TrezorDeviceInfoWithSession = TrezorDeviceInfo & {
-    session?: string | null;
-    debugSession?: string | null;
-    debug: boolean;
-};
+export type Session = null | string;
+export type Descriptor = { path: string; session?: Session };
 
-export type AcquireInput = {
-    path: string;
-    previous?: string;
-};
+export interface Success<T> {
+    success: true;
+    payload: T;
+}
 
-export type MessageFromTrezor = { type: string; message: Record<string, unknown> };
+export type ErrorGeneric<ErrorType> = ErrorType extends AnyError
+    ? {
+        success: false;
+        // todo: maybe code? for unification with connect?
+        error: ErrorType;
+    }
+    : {
+        success: false;
+        error: ErrorType;
+        message?: string;
+    };
 
-export type Transport = {
-    enumerate(): Promise<Array<TrezorDeviceInfoWithSession>>;
-    listen(old?: Array<TrezorDeviceInfoWithSession>): Promise<Array<TrezorDeviceInfoWithSession>>;
-    acquire(input: AcquireInput, debugLink: boolean): Promise<string>;
-    release(session: string, onclose: boolean, debugLink?: boolean): Promise<void>;
-    configure(signedData: JSON | string): Promise<void>;
-    call(
-        session: string,
-        name: string,
-        data: Record<string, unknown>,
-        debugLink: boolean,
-    ): Promise<MessageFromTrezor>;
-    post(
-        session: string,
-        name: string,
-        data: Record<string, unknown>,
-        debugLink: boolean,
-    ): Promise<void>;
-    read(session: string, debugLink: boolean): Promise<MessageFromTrezor>;
-    // resolves when the transport can be used; rejects when it cannot
-    init(debug?: boolean): Promise<void>;
-    stop(): void;
-    configured: boolean;
-    version: string;
-    name: string;
-    requestNeeded: boolean;
-    isOutdated: boolean;
-    setBridgeLatestUrl(url: string): void;
-    setBridgeLatestVersion(version: string): void;
-    activeName?: string;
+export type ResultWithTypedError<T, E> = Success<T> | ErrorGeneric<E>;
+export type AsyncResultWithTypedError<T, E> = Promise<Success<T> | ErrorGeneric<E>>;
 
-    // webusb has a different model, where you have to
-    // request device connection
-    requestDevice: () => Promise<void>;
-};
+export interface Logger {
+    debug(...args: any): void;
+    log(...args: any): void;
+    warn(...args: any): void;
+    error(...args: any): void;
+}
