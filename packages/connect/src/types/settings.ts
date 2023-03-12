@@ -17,7 +17,7 @@ export interface ConnectSettings {
     popup?: boolean;
     transportReconnect?: boolean;
     webusb?: boolean; // deprecated
-    transports?: Transport['name'][];
+    transports?: Transport['name'][] | Transport[];
     pendingTransportEvent?: boolean;
     lazyLoad?: boolean;
     interactionTimeout?: number;
@@ -36,3 +36,10 @@ export interface ConnectSettings {
     timestamp: number;
     proxy?: Proxy;
 }
+
+export const isTransportInterface = (
+    transports?: Transport['name'][] | Transport[],
+): transports is Transport[] => {
+    if (!transports) return false;
+    return (transports[0] as Transport).name !== undefined;
+};

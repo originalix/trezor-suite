@@ -8,7 +8,7 @@ import { parseFirmware } from './firmwareInfo';
 import { parseBridgeJSON } from './transportInfo';
 import { config } from './config';
 
-import type { ConnectSettings } from '../types';
+import { ConnectSettings, isTransportInterface } from '../types';
 
 type AssetCollection = { [key: string]: JSON };
 
@@ -50,7 +50,11 @@ export class DataManager {
         }
 
         // hotfix webusb + chrome:72, allow webextensions
-        if (this.settings.popup && this.settings.env !== 'webextension') {
+        if (
+            this.settings.popup &&
+            this.settings.env !== 'webextension' &&
+            !isTransportInterface(this.settings.transports)
+        ) {
             // allow all but WebUsbTransport
             this.settings.transports = this.settings.transports?.filter(
                 (transport: string) => transport !== 'WebUsbTransport',

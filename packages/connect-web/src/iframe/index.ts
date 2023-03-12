@@ -4,6 +4,7 @@ import { createDeferred, Deferred } from '@trezor/utils';
 import { IFRAME, ERRORS, ConnectSettings } from '@trezor/connect/lib/index';
 import { getOrigin } from '@trezor/connect/lib/utils/urlUtils';
 import css from './inlineStyles';
+import { isTransportInterface } from '@trezor/connect/lib/types';
 
 /* eslint-disable import/no-mutable-exports */
 export let instance: HTMLIFrameElement | null;
@@ -91,7 +92,11 @@ export const init = async (settings: ConnectSettings) => {
     if (settings.webusb) {
         console.warn('webusb option is deprecated. use `transports: ["WebUsbTransport"] instead`');
     }
-    if (settings.webusb || settings.transports?.includes('WebUsbTransport')) {
+    if (
+        settings.webusb ||
+        (!isTransportInterface(settings.transports) &&
+            settings.transports?.includes('WebUsbTransport'))
+    ) {
         instance.setAttribute('allow', 'usb');
     }
 
