@@ -7,8 +7,8 @@ import EventEmitter from 'events';
 import {
     BridgeTransport,
     WebUsbTransport,
+    NodeUsbTransport,
     Transport,
-    // TrezorDeviceInfoWithSession as DeviceDescriptor,
     TRANSPORT,
     Descriptor,
     TRANSPORT_ERROR,
@@ -79,6 +79,9 @@ export class DeviceList extends EventEmitter {
         transports.forEach(transportType => {
             if (typeof transportType === 'string') {
                 switch (transportType) {
+                    case 'NodeUsbTransport':
+                        this.transports.push(new NodeUsbTransport({ messages: this.messages }));
+                        break;
                     case 'WebUsbTransport':
                         this.transports.push(
                             new WebUsbTransport({
