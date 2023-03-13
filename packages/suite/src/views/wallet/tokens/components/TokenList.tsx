@@ -3,6 +3,8 @@ import styled, { css } from 'styled-components';
 import { variables, useTheme, Icon, Card } from '@trezor/components';
 import { FiatValue, FormattedCryptoAmount, TrezorLink } from '@suite-components';
 import { Account } from '@wallet-types';
+import { useSelector } from '@suite-hooks';
+import BigNumber from 'bignumber.js';
 
 const Wrapper = styled(Card)<{ isTestnet?: boolean }>`
     display: grid;
@@ -69,11 +71,38 @@ interface TokenListProps {
 
 export const TokenList = ({ tokens, explorerUrl, isTestnet, networkType }: TokenListProps) => {
     const theme = useTheme();
+    const fiat = useSelector(state => state.wallet.fiat);
+
+    // sort by 1. total fiat, 2. token price, 3. symbol length, 4. alphabetically
+    const sortedTokens = React.useMemo(() => {
+        if (!tokens || !tokens.length) return [];
+
+        const tokensWithRates = tokens.map(token => ({
+            ...token,
+            rates: fiat.coins.find(
+                f =>
+                    f.symbol.toLowerCase() === token.symbol?.toLowerCase() &&
+                    f.tokenAddress?.toLowerCase() === token.address.toLowerCase(),
+            )?.current?.rates,
+        }));
+
+        return tokensWithRates.sort(
+            (a, b) =>
+                new BigNumber(b.balance || 0)
+                    .multipliedBy(b.rates?.usd || 0)
+                    .minus(new BigNumber(a.balance || 0).multipliedBy(a.rates?.usd || 0))
+                    .toNumber() ||
+                (b.rates?.usd || -1) - (a.rates?.usd || -1) ||
+                (a.symbol || '').length - (b.symbol || '').length ||
+                (a.symbol || '').localeCompare(b.symbol || ''),
+        );
+    }, [tokens, fiat.coins]);
+
     if (!tokens || tokens.length === 0) return null;
 
     return (
         <Wrapper isTestnet={isTestnet} noPadding>
-            {tokens.map(t => {
+            {sortedTokens.map(t => {
                 // In Cardano token name is optional and in there is no symbol.
                 // However, if Cardano token doesn't have a name on blockchain, its TokenInfo has both name
                 // and symbol props set to a token fingerprint (done in blockchain-link) and we
