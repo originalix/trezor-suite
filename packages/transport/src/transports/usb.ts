@@ -146,6 +146,40 @@ export abstract class UsbTransport extends Transport {
         );
     }
 
+    public release(session: string) {
+        return scheduleAction(
+            async () => {
+                if (this.listening) {
+                    this.releasingSession = session;
+                    this.releasePromise = createDeferred();
+                }
+
+                const releaseIntentResponse = await this.sessionsClient.releaseIntent({
+                    session,
+                });
+
+                if (!releaseIntentResponse.success) {
+                    return this.error({ error: releaseIntentResponse.error });
+                }
+
+                await this.releaseDevice(releaseIntentResponse.payload.path);
+
+                await this.sessionsClient.releaseDone({
+                    path: releaseIntentResponse.payload.path,
+                });
+
+                if (this.releasePromise?.promise) {
+                    await this.releasePromise.promise;
+                    delete this.releasePromise;
+                }
+                return this.success(undefined);
+            },
+            {
+                timeout: ACTION_TIMEOUT,
+            },
+        );
+    }
+
     public call({
         session,
         name,
@@ -209,7 +243,6 @@ export abstract class UsbTransport extends Transport {
             },
             {
                 signal: this.abortController.signal,
-                timeout: ACTION_TIMEOUT,
             },
         );
     }
@@ -294,41 +327,6 @@ export abstract class UsbTransport extends Transport {
                     }
                     return this.unknownError(err, []);
                 }
-            },
-            {
-                signal: this.abortController.signal,
-                timeout: ACTION_TIMEOUT,
-            },
-        );
-    }
-
-    public release(session: string) {
-        return scheduleAction(
-            async () => {
-                if (this.listening) {
-                    this.releasingSession = session;
-                    this.releasePromise = createDeferred();
-                }
-
-                const releaseIntentResponse = await this.sessionsClient.releaseIntent({
-                    session,
-                });
-
-                if (!releaseIntentResponse.success) {
-                    return this.error({ error: releaseIntentResponse.error });
-                }
-
-                await this.releaseDevice(releaseIntentResponse.payload.path);
-
-                await this.sessionsClient.releaseDone({
-                    path: releaseIntentResponse.payload.path,
-                });
-
-                if (this.releasePromise?.promise) {
-                    await this.releasePromise.promise;
-                    delete this.releasePromise;
-                }
-                return this.success(undefined);
             },
             {
                 signal: this.abortController.signal,
