@@ -81,6 +81,7 @@ export const filterTokenTransfers = (
                 amount: tr.value,
                 from: tr.from,
                 to: tr.to,
+                standard: tr.type,
             };
         });
 };

@@ -41,6 +41,7 @@ export interface TokenTransfer {
     amount: string;
     from?: string;
     to?: string;
+    standard?: 'ERC20' | 'ERC1155' | 'ERC721';
 }
 
 export interface InternalTransfer {

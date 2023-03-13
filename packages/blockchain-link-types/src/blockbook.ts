@@ -153,6 +153,7 @@ export interface Transaction {
         name: string;
         symbol: string;
         decimals?: number;
+        type: 'ERC20' | 'ERC1155' | 'ERC721';
     }[];
 }
 
