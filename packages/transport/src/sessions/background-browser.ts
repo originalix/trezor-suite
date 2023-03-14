@@ -71,7 +71,9 @@ export const initBackgroundInBrowser = () => {
             };
         return {
             background,
-            requestFn: background.handleMessage,
+            // todo: but maybe SessionsBackground could become completely static class and we could get rid of "this" completely
+            // it does not make any sense to have multiple instances of this class
+            requestFn: background.handleMessage.bind(background),
             registerCallbackOnDescriptorsChange,
         };
     }
