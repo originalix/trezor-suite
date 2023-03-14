@@ -3,6 +3,7 @@ import type { AsyncResultWithTypedError, Success } from '../types';
 import { success, error, unknownError } from '../utils/result';
 import * as INTERFACE_ERRORS from './errors';
 import * as COMMON_ERRORS from '../errors';
+import * as TRANSPORT_ERRORS from '../transports/errors';
 
 type TransportInterfaceDevice<DeviceType> = {
     session?: null | string;
@@ -67,6 +68,8 @@ export abstract class TransportAbstractInterface<DeviceType> extends TypedEmitte
         | typeof INTERFACE_ERRORS.UNABLE_TO_OPEN_DEVICE
         | typeof INTERFACE_ERRORS.UNABLE_TO_CLAIM_INTERFACE
         | typeof COMMON_ERRORS.UNEXPECTED_ERROR
+        | typeof TRANSPORT_ERRORS.ABORTED_BY_TIMEOUT
+        | typeof TRANSPORT_ERRORS.ABORTED_BY_SIGNAL
     >;
 
     /**

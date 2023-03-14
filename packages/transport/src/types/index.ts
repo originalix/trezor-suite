@@ -24,15 +24,15 @@ export interface Success<T> {
 
 export type ErrorGeneric<ErrorType> = ErrorType extends AnyError
     ? {
-        success: false;
-        // todo: maybe code? for unification with connect?
-        error: ErrorType;
-    }
+          success: false;
+          // todo: maybe code? for unification with connect?
+          error: ErrorType;
+      }
     : {
-        success: false;
-        error: ErrorType;
-        message?: string;
-    };
+          success: false;
+          error: ErrorType;
+          message?: string;
+      };
 
 export type ResultWithTypedError<T, E> = Success<T> | ErrorGeneric<E>;
 export type AsyncResultWithTypedError<T, E> = Promise<Success<T> | ErrorGeneric<E>>;

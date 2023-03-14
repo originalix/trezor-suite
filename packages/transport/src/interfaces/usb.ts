@@ -9,6 +9,7 @@ import {
     T1_HID_VENDOR,
     TREZOR_USB_DESCRIPTORS,
 } from '../constants';
+import { scheduleAction } from '../utils/scheduleAction';
 
 import * as COMMON_ERRORS from '../errors';
 import * as INTERFACE_ERRORS from './errors';
@@ -84,12 +85,6 @@ export class TransportUsbInterface extends TransportAbstractInterface<WebUSBDevi
         if (!device) {
             return this.error({ error: INTERFACE_ERRORS.DEVICE_DISCONNECTED_WEBUSB });
         }
-        if (!device.opened) {
-            const deviceOpenResult = await this.openDevice(path, false);
-            if (!deviceOpenResult.success) {
-                return this.error({ error: deviceOpenResult.error });
-            }
-        }
 
         try {
             const res = await device.transferIn(ENDPOINT_ID, 64);
@@ -105,7 +100,6 @@ export class TransportUsbInterface extends TransportAbstractInterface<WebUSBDevi
             // todo:  this slicing shouldn't not belong to this layer but to the protocol layer
             return this.success(res.data.buffer.slice(1));
         } catch (err) {
-            console.log(err);
             return this.unknownError(err, [
                 INTERFACE_ERRORS.DATA_TRANSFER_ERROR,
                 INTERFACE_ERRORS.DEVICE_DISCONNECTED_WEBUSB,
@@ -139,10 +133,17 @@ export class TransportUsbInterface extends TransportAbstractInterface<WebUSBDevi
         }
     }
 
-    public async openDevice(path: string, first: boolean) {
+    public openDevice(path: string, first: boolean) {
+        // multiple retries to open device, let me explain why.
+        // when another window acquires device,
+        return scheduleAction(() => this.openInternal(path, first), {
+            attempts: [{ gap: 200 }, { gap: 400 }, { gap: 600 }, { gap: 800 }, { gap: 1000 }],
+        });
+    }
+
+    public async openInternal(path: string, first: boolean) {
         // todo: this was previously run in a loop with increasing timeout for each iteration. I am not sure it is
         // needed so I removed it for now
-
         const device = this.findDevice(path);
         if (!device) {
             return this.error({ error: INTERFACE_ERRORS.DEVICE_DISCONNECTED_WEBUSB });
@@ -155,7 +156,6 @@ export class TransportUsbInterface extends TransportAbstractInterface<WebUSBDevi
                 error: INTERFACE_ERRORS.UNABLE_TO_OPEN_DEVICE,
                 message: err.message,
             });
-            // continue;
         }
 
         if (first) {
@@ -163,9 +163,7 @@ export class TransportUsbInterface extends TransportAbstractInterface<WebUSBDevi
                 await device.selectConfiguration(CONFIGURATION_ID);
                 // reset fails on ChromeOS and windows
                 await device.reset();
-            } catch (err) {
-                // continue;
-            }
+            } catch (err) {}
         }
         try {
             // claim device for exclusive access by this app

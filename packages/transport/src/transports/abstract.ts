@@ -57,8 +57,8 @@ export abstract class Transport extends TypedEmitter<{
     [TRANSPORT.UPDATE]: DeviceDescriptorDiff;
     [TRANSPORT.ERROR]: // most common error - bridge was killed
     | typeof TRANSPORT_ERRORS.HTTP_ERROR
-    // probably never happens, wrong shape of data came from bridge
-    | typeof TRANSPORT_ERRORS.WRONG_RESULT_TYPE;
+        // probably never happens, wrong shape of data came from bridge
+        | typeof TRANSPORT_ERRORS.WRONG_RESULT_TYPE;
 }> {
     public abstract name: 'BridgeTransport' | 'NodeUsbTransport' | 'WebUsbTransport';
     /**
@@ -137,10 +137,10 @@ export abstract class Transport extends TypedEmitter<{
 
         // some abstract inactive logger
         this.logger = logger || {
-            debug: (..._args: string[]) => { },
-            log: (..._args: string[]) => { },
-            warn: (..._args: string[]) => { },
-            error: (..._args: string[]) => { },
+            debug: (..._args: string[]) => {},
+            log: (..._args: string[]) => {},
+            warn: (..._args: string[]) => {},
+            error: (..._args: string[]) => {},
         };
     }
 
@@ -367,7 +367,7 @@ export abstract class Transport extends TypedEmitter<{
         }
 
         const diff = this._getDiff(nextDescriptors);
-
+        console.log('diff', diff);
         this.logger.debug('nextDescriptors', nextDescriptors, 'diff', diff);
 
         this.descriptors = nextDescriptors;
@@ -410,10 +410,10 @@ export abstract class Transport extends TypedEmitter<{
     // intelligible to higher layers
     protected error<
         E extends
-        | (typeof INTERFACE_ERRORS)[keyof typeof INTERFACE_ERRORS]
-        | (typeof SESSION_ERRORS)[keyof typeof SESSION_ERRORS]
-        | (typeof TRANSPORT_ERRORS)[keyof typeof TRANSPORT_ERRORS]
-        | (typeof COMMON_ERRORS)[keyof typeof COMMON_ERRORS],
+            | (typeof INTERFACE_ERRORS)[keyof typeof INTERFACE_ERRORS]
+            | (typeof SESSION_ERRORS)[keyof typeof SESSION_ERRORS]
+            | (typeof TRANSPORT_ERRORS)[keyof typeof TRANSPORT_ERRORS]
+            | (typeof COMMON_ERRORS)[keyof typeof COMMON_ERRORS],
     >(payload: { error: E; message?: string }) {
         return error<E>(payload);
     }

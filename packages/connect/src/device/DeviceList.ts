@@ -74,7 +74,7 @@ export class DeviceList extends EventEmitter {
             transports = ['BridgeTransport', 'WebUsbTransport'];
         }
 
-        const transportLogger =  initLog('@trezor/transport', DataManager.settings.debug)
+        const transportLogger = initLog('@trezor/transport', DataManager.settings.debug);
 
         // mapping of provided transports[] to @trezor/transport classes
         transports.forEach(transportType => {
@@ -147,7 +147,6 @@ export class DeviceList extends EventEmitter {
                 );
                 return;
             }
-
 
             /**
              * listen to change of descriptors reported by @trezor/transport
