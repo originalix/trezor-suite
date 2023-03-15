@@ -313,6 +313,8 @@ export class BridgeTransport extends Transport {
     private async _post(endpoint: BridgeEndpoint, options: IncompleteRequestOptions): Promise<any> {
         const { abortable, timeout, ...restOptions } = options;
 
+        // abort ma mit vlastni abortcontroller
+
         const response = await scheduleAction(
             () =>
                 bridgeApiCall({

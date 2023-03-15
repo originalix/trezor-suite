@@ -7,6 +7,7 @@ import {
 import { unknownError } from './result';
 import * as TRANSPORT_ERRORS from '../transports/errors';
 
+// todo: coinjoinRound.ts pro inspiraci
 export const scheduleAction = <T>(action: ScheduledAction<T>, params: ScheduleActionParams) => {
     try {
         return scheduleActionOrig<T>(action, params);
