@@ -1,6 +1,6 @@
 import type { WebUSB, WebUSBDevice } from 'usb';
 
-import { TransportAbstractInterface } from './abstract';
+import { AbstractInterface } from './abstract';
 import { AsyncResultWithTypedError } from '../types';
 import {
     CONFIGURATION_ID,
@@ -14,7 +14,7 @@ import { scheduleAction } from '../utils/scheduleAction';
 import * as COMMON_ERRORS from '../errors';
 import * as INTERFACE_ERRORS from './errors';
 
-export class TransportUsbInterface extends TransportAbstractInterface<WebUSBDevice> {
+export class UsbInterface extends AbstractInterface<WebUSBDevice> {
     usbInterface: WebUSB;
 
     constructor({ usbInterface }: { usbInterface: WebUSB }) {

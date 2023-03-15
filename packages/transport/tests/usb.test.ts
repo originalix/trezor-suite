@@ -1,5 +1,5 @@
 import type { Transport } from '../src/transports/abstract';
-import { UsbTransport, UsbTransportConstructorParams } from '../src/transports/usb';
+import { UsbTransport, UsbTransportConstructorParams } from '../src/transports/abstractUsb';
 import { TransportUsbInterface } from '../src/interfaces/usb';
 import { SessionsClient } from '../src/sessions/client';
 import { SessionsBackground } from '../src/sessions/background';

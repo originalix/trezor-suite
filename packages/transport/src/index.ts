@@ -17,7 +17,7 @@ protobuf.configure();
 export type { MessageFromTrezor, Descriptor } from './types';
 export { TREZOR_USB_DESCRIPTORS } from './constants';
 
-export { Transport, TRANSPORT } from './transports/abstract';
+export { AbstractTransport as Transport, TRANSPORT } from './transports/abstract';
 
 // messages are exported but there is no real need to use them elsewhere
 // transports have reference to this already

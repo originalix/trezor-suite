@@ -53,7 +53,7 @@ type ConstructorParams = {
     logger?: Logger;
 };
 
-export abstract class Transport extends TypedEmitter<{
+export abstract class AbstractTransport extends TypedEmitter<{
     [TRANSPORT.UPDATE]: DeviceDescriptorDiff;
     [TRANSPORT.ERROR]: // most common error - bridge was killed
     | typeof TRANSPORT_ERRORS.HTTP_ERROR

@@ -12,9 +12,11 @@ type TransportInterfaceDevice<DeviceType> = {
 };
 
 /**
- * This class defines shape for native transport interfaces (navigator.usb, etc)
+ * This class defines unifying shape for native communication interfaces such as
+ * - navigator.bluetooth
+ * - navigator.usb
  */
-export abstract class TransportAbstractInterface<DeviceType> extends TypedEmitter<{
+export abstract class AbstractInterface<DeviceType> extends TypedEmitter<{
     'transport-interface-change': TransportInterfaceDevice<DeviceType>[];
     'transport-interface-error':
         | typeof INTERFACE_ERRORS.DEVICE_NOT_FOUND

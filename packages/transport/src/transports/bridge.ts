@@ -5,7 +5,7 @@ import * as bridgeApiResult from '../utils/bridgeApiResult';
 import { scheduleAction } from '../utils/scheduleAction';
 import { buildOne } from '../lowlevel/send';
 import { receiveOne } from '../lowlevel/receive';
-import { Transport, AcquireInput } from './abstract';
+import { AbstractTransport, AcquireInput } from './abstract';
 
 import * as TRANSPORT_ERRORS from './errors';
 import { ACTION_TIMEOUT } from '../constants';
@@ -33,13 +33,13 @@ type IncompleteRequestOptions = {
     timeout?: boolean;
 };
 
-type BridgeConstructorParameters = ConstructorParameters<typeof Transport>[0] & {
+type BridgeConstructorParameters = ConstructorParameters<typeof AbstractTransport>[0] & {
     // bridge url
     url?: string;
     latestVersion?: string;
 };
 
-export class BridgeTransport extends Transport {
+export class BridgeTransport extends AbstractTransport {
     /**
      * information about  the latest version of trezord.
      */

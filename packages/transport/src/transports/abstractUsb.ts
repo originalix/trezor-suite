@@ -1,6 +1,6 @@
 import { createDeferred } from '@trezor/utils';
 
-import { Transport, AcquireInput } from './abstract';
+import { AbstractTransport, AcquireInput } from './abstract';
 import { buildAndSend } from '../lowlevel/send';
 import { receiveAndParse } from '../lowlevel/receive';
 import { SessionsClient } from '../sessions/client';
@@ -9,11 +9,11 @@ import * as TRANSPORT_ERRORS from './errors';
 import * as INTERFACE_ERRORS from '../interfaces/errors';
 import * as SESSION_ERRORS from '../sessions/errors';
 import { ACTION_TIMEOUT } from '../constants';
-import type { TransportUsbInterface } from '../interfaces/usb';
+import type { UsbInterface } from '../interfaces/usb';
 import { scheduleAction } from '../utils/scheduleAction';
 
-export type UsbTransportConstructorParams = ConstructorParameters<typeof Transport>[0] & {
-    usbInterface: TransportUsbInterface;
+export type UsbTransportConstructorParams = ConstructorParameters<typeof AbstractTransport>[0] & {
+    usbInterface: UsbInterface;
     sessionsClient: (typeof SessionsClient)['prototype'];
 };
 
@@ -22,11 +22,11 @@ export type UsbTransportConstructorParams = ConstructorParameters<typeof Transpo
  * Abstract class for transports with direct usb access (webusb, nodeusb).
  *
  */
-export abstract class UsbTransport extends Transport {
+export abstract class AbstractUsbTransport extends AbstractTransport {
     // sessions client is a standardized interface for communicating with sessions backend
     // which can live in couple of context (shared worker, local module, websocket server etc)
     private sessionsClient: UsbTransportConstructorParams['sessionsClient'];
-    private transportInterface: TransportUsbInterface;
+    private transportInterface: UsbInterface;
 
     constructor({ messages, usbInterface, sessionsClient, signal }: UsbTransportConstructorParams) {
         super({ messages, signal });
