@@ -53,20 +53,24 @@ describe('backendUtils', () => {
 
     describe('isTaprootTx', () => {
         it('taproot tx', () => {
+            // @ts-expect-error partial fixture
             expect(isTaprootTx(TAPROOT_TX, networks.regtest)).toBe(true);
         });
 
         it('non-taproot tx', () => {
+            // @ts-expect-error partial fixture
             expect(isTaprootTx(NON_TAPROOT_TX, networks.regtest)).toBe(false);
         });
     });
 
     describe('doesTxContainAddress', () => {
         it('containing', () => {
+            // @ts-expect-error partial fixture
             expect(doesTxContainAddress(TAPROOT_ADDRESS)(TAPROOT_TX)).toBe(true);
         });
 
         it('not containing', () => {
+            // @ts-expect-error partial fixture
             expect(doesTxContainAddress(TAPROOT_ADDRESS)(NON_TAPROOT_TX)).toBe(false);
         });
     });

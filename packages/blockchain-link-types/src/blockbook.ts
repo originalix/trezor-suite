@@ -7,7 +7,8 @@ import type {
     AccountInfoParams,
 } from './params';
 import type { AccountBalanceHistory, FiatRates } from './common';
-
+import { Vin, Vout } from './blockbook-api';
+export type { Vin, Vout } from './blockbook-api';
 export interface Subscribe {
     subscribed: boolean;
 }
@@ -97,17 +98,7 @@ export type AccountUtxo = {
     coinbase?: boolean;
 }[];
 
-export interface VinVout {
-    n: number;
-    addresses?: string[];
-    isAddress: boolean;
-    value?: string;
-    coinbase?: string;
-    txid?: string;
-    vout?: number;
-    sequence?: number;
-    hex?: string;
-}
+export type VinVout = Vin & Vout;
 
 export interface Transaction {
     txid: string;

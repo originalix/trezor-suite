@@ -7,7 +7,8 @@ import type { VinVout } from '@trezor/blockchain-link-types/lib/blockbook';
 export type Addresses = ({ address: string } | string)[] | string;
 
 export const isAccountOwned = (addresses: string[]) => (vinVout: VinVout) =>
-    Array.isArray(vinVout?.addresses) && vinVout.addresses.some(a => addresses.includes(a));
+    Array.isArray(vinVout?.addresses) &&
+    vinVout.addresses.some((a: string) => addresses.includes(a));
 
 export const filterTargets = (addresses: Addresses, targets: VinVout[]): VinVout[] => {
     if (typeof addresses === 'string') {
