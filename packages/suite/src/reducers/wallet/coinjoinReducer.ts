@@ -92,19 +92,19 @@ type ExtractActionPayload<A> = Extract<Action, { type: A }> extends { type: A; p
 
 const createAccount = (
     draft: CoinjoinState,
-    { accountKey, symbol }: ExtractActionPayload<typeof COINJOIN.ACCOUNT_CREATE>,
+    account: ExtractActionPayload<typeof accountsActions.createAccount.type>,
 ) => {
     draft.isPreloading = false;
     const coinjoinAccount = {
-        key: accountKey,
-        symbol,
+        key: account.key,
+        symbol: account.symbol,
         rawLiquidityClue: null, // NOTE: liquidity clue is calculated from tx history. default value is `null`
         targetAnonymity: DEFAULT_TARGET_ANONYMITY,
         maxFeePerKvbyte: MAX_MINING_FEE_FALLBACK,
         skipRounds: DEFAULT_SKIP_ROUNDS,
         previousSessions: [],
     };
-    const index = draft.accounts.findIndex(a => a.key === accountKey);
+    const index = draft.accounts.findIndex(a => a.key === account.key);
     if (index < 0) draft.accounts.push(coinjoinAccount);
     else draft.accounts[index] = coinjoinAccount;
 };
@@ -416,8 +416,10 @@ export const coinjoinReducer = (
                 updateDebugMode(draft, action.payload);
                 break;
 
-            case COINJOIN.ACCOUNT_CREATE:
-                createAccount(draft, action.payload);
+            case accountsActions.createAccount.type:
+                if (action.payload.accountType === 'coinjoin') {
+                    createAccount(draft, action.payload);
+                }
                 break;
             case COINJOIN.ACCOUNT_SET_LIQUIDITY_CLUE:
                 setLiquidityClue(draft, action.payload);
