@@ -9,6 +9,7 @@ import { AnonymitySet, TokenTransfer } from '@trezor/blockchain-link';
 import { Icon, useTheme, variables, CollapsibleBox } from '@trezor/components';
 import { UtxoAnonymity } from '@wallet-components';
 import { TxAddressOverflow } from './TxAddressOverflow';
+import { AnalyzeInBlockbookBanner } from './AnalyzeInBlockbookBanner';
 
 export const blurFix = css`
     margin-left: -10px;
@@ -19,7 +20,7 @@ export const blurFix = css`
 
 const Wrapper = styled.div`
     text-align: left;
-    margin-top: 25px;
+    margin-top: 16px;
     overflow: auto;
     ${blurFix}
 `;
@@ -29,13 +30,14 @@ const StyledCollapsibleBox = styled(CollapsibleBox)`
     box-shadow: none;
     border-radius: 0;
     margin-bottom: 0;
-    padding: 16px 0;
+    padding-bottom: 16px;
     text-align: left;
     overflow: auto;
     ${blurFix}
 
     & + & {
         border-top: 1px solid ${({ theme }) => theme.STROKE_GREY};
+        padding-top: 16px;
     }
 
     ${CollapsibleBox.Header} {
@@ -268,7 +270,7 @@ const EthereumSpecificBalanceDetailsRow = ({ tx }: EthereumSpecificBalanceDetail
             ) : null}
 
             {Object.entries(tokensByStandard).map(([key, tokens]) => (
-                <GridGroup>
+                <GridGroup key={key}>
                     <IOGridGroupWrapper
                         heading={
                             <Translation
@@ -389,12 +391,13 @@ interface IODetailsProps {
     tx: WalletAccountTransaction;
 }
 
+// Not ready for Cardano tokens, they will not be visible, probably
 export const IODetails = ({ tx }: IODetailsProps) => {
     const balanceBasedNetworks = ['eth', 'etc', 'trop', 'tgor'];
     if (balanceBasedNetworks.includes(tx.symbol)) {
-        // Cardano tokens???
         return (
             <Wrapper>
+                <AnalyzeInBlockbookBanner txid={tx.txid} />
                 <BalanceDetailsRow tx={tx} />
                 <EthereumSpecificBalanceDetailsRow tx={tx} />
             </Wrapper>
@@ -403,7 +406,8 @@ export const IODetails = ({ tx }: IODetailsProps) => {
 
     if (tx.type === 'joint') {
         return (
-            <>
+            <Wrapper>
+                <AnalyzeInBlockbookBanner txid={tx.txid} />
                 <CollapsibleIOSection
                     heading={<Translation id="TR_MY_INPUTS_AND_OUTPUTS" />}
                     opened
@@ -417,12 +421,13 @@ export const IODetails = ({ tx }: IODetailsProps) => {
                     inputs={tx.details.vin?.filter(vin => !vin.isAccountOwned)}
                     outputs={tx.details.vout?.filter(vout => !vout.isAccountOwned)}
                 />
-            </>
+            </Wrapper>
         );
     }
 
     return (
         <Wrapper>
+            <AnalyzeInBlockbookBanner txid={tx.txid} />
             <IOSectionColumn tx={tx} inputs={tx.details.vin} outputs={tx.details.vout} />
         </Wrapper>
     );
