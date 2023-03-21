@@ -1,9 +1,15 @@
-import { A, G } from '@mobily/ts-belt';
+import { A, G, pipe } from '@mobily/ts-belt';
 
-import { AccountsRootState, selectAccountByKey } from '@suite-common/wallet-core';
-import { TokenInfo } from '@trezor/blockchain-link';
+import {
+    AccountsRootState,
+    selectAccountByKey,
+    selectAccountTransactions,
+    TransactionsRootState,
+} from '@suite-common/wallet-core';
+import { AccountKey, WalletAccountTransaction } from '@suite-common/wallet-types';
+import { TokenInfo, TokenTransfer } from '@trezor/blockchain-link';
 
-import { EthereumTokenAccountWithBalance } from './types';
+import { EthereumTokenAccountWithBalance, EthereumTokenSymbol } from './types';
 import { isEthereumAccountSymbol } from './utils';
 
 export const filterTokenHasBalance = (token: TokenInfo) => !!token.balance && token.balance !== '0';
@@ -14,14 +20,17 @@ export const selectEthereumAccountsTokensWithBalance = (
 ): EthereumTokenAccountWithBalance[] => {
     const account = selectAccountByKey(state, ethereumAccountKey);
     if (!account || !isEthereumAccountSymbol(account.symbol)) return [];
-    return account.tokens?.filter(filterTokenHasBalance) as EthereumTokenAccountWithBalance[];
+    return A.filter(
+        account.tokens ?? [],
+        filterTokenHasBalance,
+    ) as EthereumTokenAccountWithBalance[];
 };
 
 // If account item is ethereum which has tokens with non-zero balance,
 // we want to adjust styling to display token items.
 export const selectIsEthereumAccountWithTokensWithBalance = (
     state: AccountsRootState,
-    ethereumAccountKey: string,
+    ethereumAccountKey: AccountKey,
 ): boolean => {
     const account = selectAccountByKey(state, ethereumAccountKey);
     return (
@@ -31,3 +40,30 @@ export const selectIsEthereumAccountWithTokensWithBalance = (
         A.isNotEmpty(account.tokens.filter(filterTokenHasBalance))
     );
 };
+
+export const selectEthereumAccountToken = (
+    state: AccountsRootState,
+    accountKey: AccountKey,
+    tokenSymbol?: EthereumTokenSymbol,
+): TokenInfo | null => {
+    const account = selectAccountByKey(state, accountKey);
+    return account?.tokens
+        ? (A.find(account?.tokens, (token: TokenInfo) => token.symbol === tokenSymbol) as TokenInfo)
+        : null;
+};
+
+export const selectEthereumAccountTokenTransactions = (
+    state: TransactionsRootState,
+    accountKey: AccountKey,
+    tokenSymbol: EthereumTokenSymbol,
+): WalletAccountTransaction[] =>
+    pipe(
+        selectAccountTransactions(state, accountKey),
+        A.filter(transaction =>
+            A.some(
+                transaction.tokens,
+                (tokenTransfer: TokenTransfer) =>
+                    tokenTransfer.symbol.toLowerCase() === tokenSymbol.toLowerCase(),
+            ),
+        ),
+    ) as WalletAccountTransaction[];

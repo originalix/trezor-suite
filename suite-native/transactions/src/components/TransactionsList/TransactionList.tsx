@@ -8,9 +8,11 @@ import { groupTransactionsByDate, MonthKey } from '@suite-common/wallet-utils';
 import { selectIsLoadingTransactions } from '@suite-common/wallet-core';
 import { Box, Loader } from '@suite-native/atoms';
 import { TAB_BAR_HEIGHT } from '@suite-native/navigation';
+import { EthereumTokenSymbol } from '@suite-native/ethereum-tokens';
 
 import { TransactionListGroupTitle } from './TransactionListGroupTitle';
 import { TransactionListItem } from './TransactionListItem';
+import { TokenTransferListItem } from './TokenTransferListItem';
 import { TransactionsEmptyState } from '../TransactionsEmptyState';
 
 type AccountTransactionProps = {
@@ -18,13 +20,7 @@ type AccountTransactionProps = {
     fetchMoreTransactions: (pageToFetch: number, perPage: number) => void;
     listHeaderComponent: JSX.Element;
     accountKey: string;
-};
-
-type RenderItemParams = {
-    item: WalletAccountTransaction;
-    section: { monthKey: MonthKey; data: WalletAccountTransaction[] };
-    index: number;
-    accountKey: AccountKey;
+    tokenSymbol?: EthereumTokenSymbol;
 };
 
 type RenderSectionHeaderParams = {
@@ -33,7 +29,23 @@ type RenderSectionHeaderParams = {
     };
 };
 
-const renderItem = ({ item, section, index, accountKey }: RenderItemParams) => (
+type RenderTransactionItemParams = {
+    item: WalletAccountTransaction;
+    section: { monthKey: MonthKey; data: WalletAccountTransaction[] };
+    index: number;
+    accountKey: AccountKey;
+};
+
+type RenderTokenTranferItemParams = RenderTransactionItemParams & {
+    tokenSymbol: EthereumTokenSymbol;
+};
+
+const renderTransactionItem = ({
+    item,
+    section,
+    index,
+    accountKey,
+}: RenderTransactionItemParams) => (
     <TransactionListItem
         key={item.txid}
         transaction={item}
@@ -42,6 +54,36 @@ const renderItem = ({ item, section, index, accountKey }: RenderItemParams) => (
         accountKey={accountKey}
     />
 );
+
+const renderTokenTransferItem = ({
+    item,
+    section,
+    index,
+    accountKey,
+    tokenSymbol,
+}: RenderTokenTranferItemParams) => {
+    const tokenTransfers = item.tokens.filter(
+        token => token.symbol.toLowerCase() === tokenSymbol.toLowerCase(),
+    );
+
+    return (
+        <>
+            {tokenTransfers.map((tokenTransfer, transferIndex) => (
+                <TokenTransferListItem
+                    key={tokenTransfer.symbol}
+                    tokenTransfer={tokenTransfer}
+                    txid={item.txid}
+                    accountKey={accountKey}
+                    isFirst={index === 0 && transferIndex === 0}
+                    isLast={
+                        index === section.data.length - 1 &&
+                        transferIndex === tokenTransfers.length - 1
+                    }
+                />
+            ))}
+        </>
+    );
+};
 
 const renderSectionHeader = ({ section: { monthKey } }: RenderSectionHeaderParams) => (
     <TransactionListGroupTitle key={monthKey} monthKey={monthKey} />
@@ -62,6 +104,7 @@ export const TransactionList = ({
     listHeaderComponent,
     fetchMoreTransactions,
     accountKey,
+    tokenSymbol,
 }: AccountTransactionProps) => {
     const { applyStyle } = useNativeStyles();
     const isLoadingTransactions = useSelector(selectIsLoadingTransactions);
@@ -108,7 +151,9 @@ export const TransactionList = ({
             <SectionList
                 sections={sectionsData}
                 renderItem={({ item, section, index }) =>
-                    renderItem({ item, section, index, accountKey })
+                    tokenSymbol
+                        ? renderTokenTransferItem({ item, section, index, accountKey, tokenSymbol })
+                        : renderTransactionItem({ item, section, index, accountKey })
                 }
                 renderSectionHeader={renderSectionHeader}
                 ListEmptyComponent={<TransactionsEmptyState accountKey={accountKey} />}

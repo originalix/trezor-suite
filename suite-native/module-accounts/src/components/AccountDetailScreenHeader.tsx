@@ -16,6 +16,7 @@ import { prepareNativeStyle, useNativeStyles } from '@trezor/styles';
 type AccountDetailScreenHeaderProps = {
     accountLabel?: string;
     accountKey: string;
+    tokenName?: string;
 };
 
 type AccountDetailNavigationProps = StackToStackCompositeNavigationProps<
@@ -31,6 +32,7 @@ const headerStyle = prepareNativeStyle(utils => ({
 export const AccountDetailScreenHeader = ({
     accountLabel,
     accountKey,
+    tokenName,
 }: AccountDetailScreenHeaderProps) => {
     const { applyStyle } = useNativeStyles();
     const navigation = useNavigation<AccountDetailNavigationProps>();
@@ -43,24 +45,19 @@ export const AccountDetailScreenHeader = ({
 
     return (
         <ScreenHeader
-            leftIcon={
-                <IconButton
-                    colorScheme="tertiaryElevation0"
-                    size="medium"
-                    iconName="chevronLeft"
-                    onPress={() => navigation.goBack()}
-                />
-            }
+            hasGoBackIcon
             rightIcon={
-                <IconButton
-                    colorScheme="tertiaryElevation0"
-                    size="medium"
-                    iconName="settings"
-                    onPress={handleSettingsNavigation}
-                />
+                !tokenName && (
+                    <IconButton
+                        colorScheme="tertiaryElevation0"
+                        size="medium"
+                        iconName="settings"
+                        onPress={handleSettingsNavigation}
+                    />
+                )
             }
             style={applyStyle(headerStyle)}
-            title={accountLabel}
+            title={`${accountLabel} ${tokenName}`}
         />
     );
 };

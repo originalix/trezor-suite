@@ -6816,6 +6816,7 @@ __metadata:
     "@mobily/ts-belt": ^3.13.1
     "@suite-common/wallet-config": "workspace:*"
     "@suite-common/wallet-core": "workspace:*"
+    "@suite-common/wallet-types": "workspace:*"
     "@trezor/blockchain-link": "workspace:*"
   languageName: unknown
   linkType: soft
@@ -6964,6 +6965,7 @@ __metadata:
     "@suite-common/wallet-types": "workspace:*"
     "@suite-native/accounts": "workspace:*"
     "@suite-native/atoms": "workspace:*"
+    "@suite-native/ethereum-tokens": "workspace:*"
     "@suite-native/formatters": "workspace:*"
     "@suite-native/forms": "workspace:*"
     "@suite-native/graph": "workspace:*"
@@ -7102,6 +7104,7 @@ __metadata:
     "@suite-common/wallet-config": "workspace:*"
     "@suite-common/wallet-types": "workspace:*"
     "@suite-native/atoms": "workspace:*"
+    "@suite-native/ethereum-tokens": "workspace:*"
     "@trezor/connect": "workspace:*"
     "@trezor/icons": "workspace:*"
     "@trezor/styles": "workspace:*"
@@ -7276,10 +7279,12 @@ __metadata:
     "@suite-common/wallet-types": "workspace:*"
     "@suite-common/wallet-utils": "workspace:*"
     "@suite-native/atoms": "workspace:*"
+    "@suite-native/ethereum-tokens": "workspace:*"
     "@suite-native/formatters": "workspace:*"
     "@suite-native/helpers": "workspace:*"
     "@suite-native/module-settings": "workspace:*"
     "@suite-native/navigation": "workspace:*"
+    "@trezor/blockchain-link-types": "workspace:*"
     "@trezor/icons": "workspace:*"
     "@trezor/styles": "workspace:*"
     "@trezor/theme": "workspace:*"
