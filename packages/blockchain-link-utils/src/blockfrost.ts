@@ -117,7 +117,7 @@ export const transformInputOutput = (
 export const filterTokenTransfers = (
     accountAddress: AccountAddresses,
     tx: BlockfrostTransaction,
-    type: Exclude<Transaction['type'], 'joint'>,
+    type: Exclude<Transaction['type'], 'joint' | 'contract'>,
 ): TokenTransfer[] => {
     const transfers: TokenTransfer[] = [];
     const myNonChangeAddresses = accountAddress.used.concat(accountAddress.unused);

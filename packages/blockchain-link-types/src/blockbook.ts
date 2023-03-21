@@ -126,19 +126,22 @@ export interface Transaction {
     vsize?: number;
     size?: number;
     ethereumSpecific?: {
+        type?: number;
         status: number;
         nonce: number;
         data?: string;
         gasLimit: number;
         gasUsed?: number;
         gasPrice: string;
+        createdContract?: string;
         parsedData?: {
             data?: string;
+            methodId?: string;
             method?: string;
             name?: string;
             parameters: Array<{ key: string; value: Array<string> }>;
         };
-        internalTransfers: Array<{
+        internalTransfers?: Array<{
             type: number;
             from: string;
             to: string;
@@ -154,6 +157,10 @@ export interface Transaction {
         symbol: string;
         decimals?: number;
         type: 'ERC20' | 'ERC1155' | 'ERC721';
+        multiTokenValues?: Array<{
+            id: string;
+            value: string;
+        }>;
     }[];
 }
 

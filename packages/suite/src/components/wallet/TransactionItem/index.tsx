@@ -75,6 +75,7 @@ const Body = styled.div`
 const ExpandButton = styled(Button)`
     justify-content: flex-start;
     align-self: flex-start;
+    margin-top: 8px;
 `;
 
 const StyledFeeRow = styled(FeeRow)<{ $isFailed?: boolean }>`
