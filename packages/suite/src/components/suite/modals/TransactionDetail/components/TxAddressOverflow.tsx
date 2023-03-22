@@ -61,9 +61,7 @@ export const TxAddressOverflow = ({ txAddress }: TxAddressOverflowProps) => {
     const { selectedAccount } = useSelector(state => state.wallet);
     const { network } = selectedAccount;
     const explorerUrl =
-        network?.networkType === 'cardano'
-            ? network?.explorer.token
-            : network?.explorer.account.replace('xpub', 'address'); // fix for btc-like coins
+        network?.networkType === 'cardano' ? network?.explorer.token : network?.explorer.address;
 
     const copy = () => copyToClipboard(txAddress || '', htmlElement.current);
 

@@ -1,8 +1,8 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, ReactNode } from 'react';
 import styled, { css } from 'styled-components';
 
 import { WalletAccountTransaction } from '@suite-common/wallet-types';
-import { formatAmount, formatNetworkAmount } from '@suite-common/wallet-utils';
+import { formatAmount, formatNetworkAmount, isNftTokenTransfer } from '@suite-common/wallet-utils';
 import { FormattedCryptoAmount, Translation } from '@suite-components';
 import { useSelector } from '@suite-hooks/useSelector';
 import { AnonymitySet, TokenTransfer } from '@trezor/blockchain-link';
@@ -10,6 +10,7 @@ import { Icon, useTheme, variables, CollapsibleBox } from '@trezor/components';
 import { UtxoAnonymity } from '@wallet-components';
 import { TxAddressOverflow } from './TxAddressOverflow';
 import { AnalyzeInBlockbookBanner } from './AnalyzeInBlockbookBanner';
+import { FormattedNftAmount } from '@suite-components/FormattedNftAmount';
 
 export const blurFix = css`
     margin-left: -10px;
@@ -105,6 +106,11 @@ const StyledFormattedCryptoAmount = styled(FormattedCryptoAmount)`
     display: block;
 `;
 
+const StyledFormattedNftAmount = styled(FormattedNftAmount)`
+    color: ${({ theme }) => theme.BG_GREEN};
+    margin-top: 4px;
+`;
+
 const GridGroup = styled.div`
     &:not(:last-of-type) {
         margin-bottom: 8px;
@@ -189,17 +195,10 @@ interface GridRowGroupComponentProps {
     from?: string;
     to?: string;
     symbol: string;
-    formattedInValue?: string;
-    formattedOutValue?: string;
+    amount?: string | ReactNode;
 }
 
-const GridRowGroupComponent = ({
-    from,
-    to,
-    symbol,
-    formattedInValue,
-    formattedOutValue,
-}: GridRowGroupComponentProps) => {
+const GridRowGroupComponent = ({ from, to, symbol, amount }: GridRowGroupComponentProps) => {
     const theme = useTheme();
 
     return (
@@ -207,11 +206,10 @@ const GridRowGroupComponent = ({
             <RowGridItem>
                 <TxAddressOverflow txAddress={from} />
                 <br />
-                {formattedInValue && (
-                    <StyledFormattedCryptoAmount value={formattedInValue} symbol={symbol} />
-                )}
-                {formattedOutValue && (
-                    <StyledFormattedCryptoAmount value={formattedOutValue} symbol={symbol} />
+                {typeof amount === 'string' ? (
+                    <StyledFormattedCryptoAmount value={amount} symbol={symbol} />
+                ) : (
+                    amount
                 )}
             </RowGridItem>
             <RowGridItem>
@@ -261,7 +259,7 @@ const EthereumSpecificBalanceDetailsRow = ({ tx }: EthereumSpecificBalanceDetail
                                 key={index}
                                 from={t.from}
                                 to={t.to}
-                                formattedInValue={formatNetworkAmount(t.amount, tx.symbol)}
+                                amount={formatNetworkAmount(t.amount, tx.symbol)}
                                 symbol={tx.symbol}
                             />
                         ))}
@@ -285,7 +283,13 @@ const EthereumSpecificBalanceDetailsRow = ({ tx }: EthereumSpecificBalanceDetail
                                 key={index}
                                 from={t.from}
                                 to={t.to}
-                                formattedInValue={formatAmount(t.amount, t.decimals)}
+                                amount={
+                                    isNftTokenTransfer(t) ? (
+                                        <StyledFormattedNftAmount transfer={t} useLink />
+                                    ) : (
+                                        formatAmount(t.amount, t.decimals)
+                                    )
+                                }
                                 symbol={t.symbol}
                             />
                         ))}
@@ -303,6 +307,7 @@ interface BalanceDetailsRowProps {
 const BalanceDetailsRow = ({ tx }: BalanceDetailsRowProps) => {
     const vout = tx?.details?.vout[0];
     const vin = tx?.details?.vin[0];
+    const value = formatNetworkAmount(vin.value || vout.value || '', tx.symbol);
 
     return vout.addresses?.[0] && vin.addresses?.[0] ? (
         <GridGroup>
@@ -310,8 +315,7 @@ const BalanceDetailsRow = ({ tx }: BalanceDetailsRowProps) => {
                 <GridRowGroupComponent
                     from={vin.addresses[0]}
                     to={vout.addresses[0]}
-                    formattedInValue={vin.value && formatNetworkAmount(vin.value, tx.symbol)}
-                    formattedOutValue={vout.value && formatNetworkAmount(vout.value, tx.symbol)}
+                    amount={value}
                     symbol={tx.symbol}
                 />
             </IOGridGroupWrapper>

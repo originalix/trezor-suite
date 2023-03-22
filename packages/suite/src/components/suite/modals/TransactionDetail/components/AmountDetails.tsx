@@ -10,8 +10,10 @@ import {
     formatCardanoWithdrawal,
     formatNetworkAmount,
     getTxOperation,
+    isNftTokenTransfer,
 } from '@suite-common/wallet-utils';
 import BigNumber from 'bignumber.js';
+import { FormattedNftAmount } from '@suite-components/FormattedNftAmount';
 
 const MainContainer = styled.div`
     display: flex;
@@ -102,14 +104,12 @@ export const AmountDetails = ({ tx, isTestnet }: AmountDetailsProps) => {
                             />
                         }
                         thirdColumn={
-                            !tx.tokens.length && (
-                                <FiatValue
-                                    amount={amount.abs().toString()}
-                                    symbol={tx.symbol}
-                                    source={tx.rates}
-                                    useCustomSource
-                                />
-                            )
+                            <FiatValue
+                                amount={amount.abs().toString()}
+                                symbol={tx.symbol}
+                                source={tx.rates}
+                                useCustomSource
+                            />
                         }
                         fourthColumn={
                             <FiatValue amount={amount.abs().toString()} symbol={tx.symbol} />
@@ -129,14 +129,12 @@ export const AmountDetails = ({ tx, isTestnet }: AmountDetailsProps) => {
                             />
                         }
                         thirdColumn={
-                            !tx.tokens.length && (
-                                <FiatValue
-                                    amount={cardanoWithdrawal}
-                                    symbol={tx.symbol}
-                                    source={tx.rates}
-                                    useCustomSource
-                                />
-                            )
+                            <FiatValue
+                                amount={cardanoWithdrawal}
+                                symbol={tx.symbol}
+                                source={tx.rates}
+                                useCustomSource
+                            />
                         }
                         fourthColumn={<FiatValue amount={cardanoWithdrawal} symbol={tx.symbol} />}
                         color="light"
@@ -154,14 +152,12 @@ export const AmountDetails = ({ tx, isTestnet }: AmountDetailsProps) => {
                             />
                         }
                         thirdColumn={
-                            !tx.tokens.length && (
-                                <FiatValue
-                                    amount={cardanoDeposit}
-                                    symbol={tx.symbol}
-                                    source={tx.rates}
-                                    useCustomSource
-                                />
-                            )
+                            <FiatValue
+                                amount={cardanoDeposit}
+                                symbol={tx.symbol}
+                                source={tx.rates}
+                                useCustomSource
+                            />
                         }
                         fourthColumn={<FiatValue amount={cardanoDeposit} symbol={tx.symbol} />}
                         color="light"
@@ -183,14 +179,12 @@ export const AmountDetails = ({ tx, isTestnet }: AmountDetailsProps) => {
                             />
                         }
                         thirdColumn={
-                            !tx.tokens.length && (
-                                <FiatValue
-                                    amount={formatNetworkAmount(t.amount, tx.symbol)}
-                                    symbol={tx.symbol}
-                                    source={tx.rates}
-                                    useCustomSource
-                                />
-                            )
+                            <FiatValue
+                                amount={formatNetworkAmount(t.amount, tx.symbol)}
+                                symbol={tx.symbol}
+                                source={tx.rates}
+                                useCustomSource
+                            />
                         }
                         fourthColumn={
                             <FiatValue
@@ -212,11 +206,19 @@ export const AmountDetails = ({ tx, isTestnet }: AmountDetailsProps) => {
                             ) : undefined
                         }
                         secondColumn={
-                            <FormattedCryptoAmount
-                                value={formatAmount(t.amount, t.decimals)}
-                                symbol={t.symbol as NetworkSymbol}
-                                signValue={getTxOperation(t, true)}
-                            />
+                            isNftTokenTransfer(t) ? (
+                                <FormattedNftAmount
+                                    transfer={t}
+                                    useLink
+                                    signValue={getTxOperation(t, true)}
+                                />
+                            ) : (
+                                <FormattedCryptoAmount
+                                    value={formatAmount(t.amount, t.decimals)}
+                                    symbol={t.symbol as NetworkSymbol}
+                                    signValue={getTxOperation(t, true)}
+                                />
+                            )
                         }
                         // no history rates available for tokens
                         thirdColumn={null}

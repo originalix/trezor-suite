@@ -42,6 +42,10 @@ export interface TokenTransfer {
     from?: string;
     to?: string;
     standard?: 'ERC20' | 'ERC1155' | 'ERC721';
+    multiTokenValues?: Array<{
+        id: string;
+        value: string;
+    }>;
 }
 
 export interface InternalTransfer {
