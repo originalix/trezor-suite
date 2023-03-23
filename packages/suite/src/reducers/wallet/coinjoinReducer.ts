@@ -43,7 +43,7 @@ import {
     MessageSystemRootState,
     selectIsFeatureDisabled,
     selectFeatureConfig,
-} from '@suite-reducers/messageSystemReducer';
+} from '@suite-common/message-system';
 import { MAX_MINING_FEE_FALLBACK } from '@trezor/coinjoin/src/constants';
 import { SelectedAccountRootState, selectSelectedAccount } from './selectedAccountReducer';
 

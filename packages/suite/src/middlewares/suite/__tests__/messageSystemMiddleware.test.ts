@@ -1,12 +1,14 @@
 import { configureStore } from '@suite/support/tests/configureStore';
 
-import { MESSAGE_SYSTEM } from '@suite-actions/constants';
 import suiteReducer from '@suite-reducers/suiteReducer';
-import messageSystemReducer from '@suite-reducers/messageSystemReducer';
+import { prepareMessageSystemReducer, messageSystemActions } from '@suite-common/message-system';
+import { extraDependencies } from '@suite/support/extraDependencies';
 import WalletReducers from '@wallet-reducers';
 import * as messageSystem from '@suite-utils/messageSystem';
 import messageSystemMiddleware from '../messageSystemMiddleware';
 import { AppState } from '../../../reducers/store';
+
+const messageSystemReducer = prepareMessageSystemReducer(extraDependencies);
 
 const middlewares = [messageSystemMiddleware];
 
@@ -81,18 +83,18 @@ describe('Message system middleware', () => {
 
         const store = initStore(getInitialState(undefined, undefined, undefined));
         await store.dispatch({
-            type: MESSAGE_SYSTEM.FETCH_CONFIG_SUCCESS_UPDATE,
+            type: messageSystemActions.fetchSuccessUpdate.type,
             payload: { config: { sequence: 1 }, timestamp: 0 },
         });
 
         const result = store.getActions();
         expect(result).toEqual([
             {
-                type: MESSAGE_SYSTEM.FETCH_CONFIG_SUCCESS_UPDATE,
+                type: messageSystemActions.fetchSuccessUpdate.type,
                 payload: { config: { sequence: 1 }, timestamp: 0 },
             },
             {
-                type: MESSAGE_SYSTEM.SAVE_VALID_MESSAGES,
+                type: messageSystemActions.updateValidMessages.type,
                 payload: {
                     banner: [message1.id, message2.id],
                     modal: [message2.id, message3.id],
@@ -108,18 +110,18 @@ describe('Message system middleware', () => {
 
         const store = initStore(getInitialState(undefined, undefined, undefined));
         await store.dispatch({
-            type: MESSAGE_SYSTEM.FETCH_CONFIG_SUCCESS_UPDATE,
+            type: messageSystemActions.fetchSuccessUpdate.type,
             payload: { config: { sequence: 1 }, timestamp: 0 },
         });
 
         const result = store.getActions();
         expect(result).toEqual([
             {
-                type: MESSAGE_SYSTEM.FETCH_CONFIG_SUCCESS_UPDATE,
+                type: messageSystemActions.fetchSuccessUpdate.type,
                 payload: { config: { sequence: 1 }, timestamp: 0 },
             },
             {
-                type: MESSAGE_SYSTEM.SAVE_VALID_MESSAGES,
+                type: messageSystemActions.updateValidMessages.type,
                 payload: { banner: [], context: [], modal: [], feature: [] },
             },
         ]);
