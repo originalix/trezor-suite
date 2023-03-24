@@ -1,8 +1,15 @@
 name: connect-webextension e2e test
 
+
+packages/connect
+packages/connect-iframe
+packages/connect-web
 on:
   pull_request:
     paths:
+      - "packages/connect/**"
+      - "packages/connect-iframe/**"
+      - "packages/connect-web/**"
       - "packages/connect-examples/**"
       - "packages/connect-webextension/**"
   push:
