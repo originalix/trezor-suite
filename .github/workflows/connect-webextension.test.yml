@@ -1,0 +1,24 @@
+name: connect-webextension e2e test
+
+on:
+  pull_request:
+    paths:
+      - "packages/connect-examples/**"
+      - "packages/connect-webextension/**"
+  push:
+    branches:
+      - develop
+
+jobs:
+  connect-webextension-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - run: yarn install
+      - run: yarn build:libs
+      - name: Build extension
+        run: "node ./packages/connect-examples/update-webextensions.js"
+      - name: Run docker
+        run: "./docker/docker-connect-webextension-ci.sh"
