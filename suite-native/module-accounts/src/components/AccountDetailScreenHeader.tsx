@@ -43,11 +43,13 @@ export const AccountDetailScreenHeader = ({
         });
     };
 
+    const isTokenAccount = !!tokenName;
+    const accountTitle = isTokenAccount ? `${accountLabel} ${tokenName}` : accountLabel;
     return (
         <ScreenHeader
             hasGoBackIcon
             rightIcon={
-                !tokenName && (
+                !isTokenAccount && (
                     <IconButton
                         colorScheme="tertiaryElevation0"
                         size="medium"
@@ -57,7 +59,7 @@ export const AccountDetailScreenHeader = ({
                 )
             }
             style={applyStyle(headerStyle)}
-            title={`${accountLabel} ${tokenName}`}
+            title={accountTitle}
         />
     );
 };

@@ -6818,6 +6818,7 @@ __metadata:
     "@suite-common/wallet-core": "workspace:*"
     "@suite-common/wallet-types": "workspace:*"
     "@trezor/blockchain-link": "workspace:*"
+    "@trezor/icons": "workspace:*"
   languageName: unknown
   linkType: soft
 

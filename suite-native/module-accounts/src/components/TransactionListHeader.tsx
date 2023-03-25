@@ -48,11 +48,14 @@ export const TransactionListHeader = memo(
                 params: { accountKey },
             });
         };
+
+        const isTokenAccount = !!tokenSymbol;
+
         return (
             <>
                 {/* Graph is temporarily hidden for ERC20 tokens. */}
                 {/* Will be solved in issue: https://github.com/trezor/trezor-suite/issues/7839 */}
-                {!tokenSymbol && (
+                {!isTokenAccount && (
                     <>
                         <AccountDetailGraphHeader accountKey={accountKey} />
                         {accountHasTransactions && (

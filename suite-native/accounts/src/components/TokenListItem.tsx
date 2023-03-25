@@ -2,9 +2,9 @@ import React from 'react';
 import { TouchableOpacity } from 'react-native';
 
 import { Box, Text } from '@suite-native/atoms';
-import { EthereumTokenIcon, EthereumTokenIconName, ethereumTokenIcons } from '@trezor/icons';
+import { EthereumTokenIcon } from '@trezor/icons';
 import { EthereumTokenAmountFormatter, TokenToFiatAmountFormatter } from '@suite-native/formatters';
-import { EthereumTokenSymbol } from '@suite-native/ethereum-tokens';
+import { EthereumTokenSymbol, getEthereumTokenIconName } from '@suite-native/ethereum-tokens';
 import { prepareNativeStyle, useNativeStyles } from '@trezor/styles';
 import { AccountKey } from '@suite-common/wallet-types';
 
@@ -51,7 +51,7 @@ export const TokenListItem = ({
         onSelectAccount(accountKey, symbol);
     };
 
-    const iconName = (symbol in ethereumTokenIcons ? symbol : 'erc20') as EthereumTokenIconName;
+    const iconName = getEthereumTokenIconName(symbol);
 
     return (
         <>

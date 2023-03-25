@@ -3,16 +3,9 @@ import React from 'react';
 import { Box } from '@suite-native/atoms';
 import { prepareNativeStyle, useNativeStyles } from '@trezor/styles';
 import { TransactionType } from '@suite-common/wallet-types';
-import {
-    CryptoIcon,
-    Icon,
-    IconName,
-    ethereumTokenIcons,
-    EthereumTokenIcon,
-    EthereumTokenIconName,
-} from '@trezor/icons';
+import { CryptoIcon, Icon, IconName, EthereumTokenIcon } from '@trezor/icons';
 import { Color } from '@trezor/theme';
-import { EthereumTokenSymbol } from '@suite-native/ethereum-tokens';
+import { EthereumTokenSymbol, getEthereumTokenIconName } from '@suite-native/ethereum-tokens';
 import { networks, NetworkSymbol } from '@suite-common/wallet-config';
 
 import { TransactionIconSpinner } from './TransactionIconSpinner';
@@ -67,12 +60,9 @@ const CoinIcon = ({ symbol }: { symbol: NetworkSymbol | EthereumTokenSymbol }) =
         return <CryptoIcon name={symbol as NetworkSymbol} size={COIN_ICON_SIZE} />;
     }
 
-    return (
-        <EthereumTokenIcon
-            name={(symbol in ethereumTokenIcons ? symbol : 'erc20') as EthereumTokenIconName}
-            size={COIN_ICON_SIZE}
-        />
-    );
+    const ethereumTokenIcon = getEthereumTokenIconName(symbol as EthereumTokenSymbol);
+
+    return <EthereumTokenIcon name={ethereumTokenIcon} size={COIN_ICON_SIZE} />;
 };
 
 export const TransactionIcon = ({

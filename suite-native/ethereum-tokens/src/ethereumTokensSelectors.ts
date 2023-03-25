@@ -6,10 +6,14 @@ import {
     selectAccountTransactions,
     TransactionsRootState,
 } from '@suite-common/wallet-core';
-import { AccountKey, WalletAccountTransaction } from '@suite-common/wallet-types';
+import { AccountKey } from '@suite-common/wallet-types';
 import { TokenInfo, TokenTransfer } from '@trezor/blockchain-link';
 
-import { EthereumTokenAccountWithBalance, EthereumTokenSymbol } from './types';
+import {
+    EthereumTokenAccountWithBalance,
+    EthereumTokenSymbol,
+    WalletAccountTransaction,
+} from './types';
 import { isEthereumAccountSymbol } from './utils';
 
 export const filterTokenHasBalance = (token: TokenInfo) => !!token.balance && token.balance !== '0';
@@ -47,9 +51,8 @@ export const selectEthereumAccountToken = (
     tokenSymbol?: EthereumTokenSymbol,
 ): TokenInfo | null => {
     const account = selectAccountByKey(state, accountKey);
-    return account?.tokens
-        ? (A.find(account?.tokens, (token: TokenInfo) => token.symbol === tokenSymbol) as TokenInfo)
-        : null;
+    if (!account || !account.tokens) return null;
+    return A.find(account.tokens, (token: TokenInfo) => token.symbol === tokenSymbol) ?? null;
 };
 
 export const selectEthereumAccountTokenTransactions = (
@@ -59,11 +62,25 @@ export const selectEthereumAccountTokenTransactions = (
 ): WalletAccountTransaction[] =>
     pipe(
         selectAccountTransactions(state, accountKey),
+        A.map(transaction => ({
+            ...transaction,
+            tokens: transaction.tokens.map((tokenTransfer: TokenTransfer) => ({
+                ...tokenTransfer,
+                symbol: tokenTransfer.symbol.toLowerCase(),
+            })),
+        })),
         A.filter(transaction =>
-            A.some(
-                transaction.tokens,
-                (tokenTransfer: TokenTransfer) =>
-                    tokenTransfer.symbol.toLowerCase() === tokenSymbol.toLowerCase(),
-            ),
+            A.some(transaction.tokens, tokenTransfer => tokenTransfer.symbol === tokenSymbol),
         ),
     ) as WalletAccountTransaction[];
+
+export const selectAccountOrTokenAccountTransactions = (
+    state: TransactionsRootState,
+    accountKey: AccountKey,
+    tokenSymbol: EthereumTokenSymbol | null,
+): WalletAccountTransaction[] => {
+    if (tokenSymbol) {
+        return selectEthereumAccountTokenTransactions(state, accountKey, tokenSymbol);
+    }
+    return selectAccountTransactions(state, accountKey) as WalletAccountTransaction[];
+};

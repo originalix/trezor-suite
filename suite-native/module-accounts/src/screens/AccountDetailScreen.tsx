@@ -13,11 +13,10 @@ import {
     selectAccountLabel,
     selectAccountByKey,
     TransactionsRootState,
-    selectAccountTransactions,
 } from '@suite-common/wallet-core';
 import { TransactionList } from '@suite-native/transactions';
 import {
-    selectEthereumAccountTokenTransactions,
+    selectAccountOrTokenAccountTransactions,
     selectEthereumAccountToken,
 } from '@suite-native/ethereum-tokens';
 
@@ -35,9 +34,7 @@ export const AccountDetailScreen = memo(
             selectAccountLabel(state, accountKey),
         );
         const accountTransactions = useSelector((state: TransactionsRootState) =>
-            tokenSymbol
-                ? selectEthereumAccountTokenTransactions(state, accountKey, tokenSymbol)
-                : selectAccountTransactions(state, accountKey),
+            selectAccountOrTokenAccountTransactions(state, accountKey, tokenSymbol ?? null),
         );
         const token = useSelector((state: AccountsRootState) =>
             selectEthereumAccountToken(state, accountKey, tokenSymbol),

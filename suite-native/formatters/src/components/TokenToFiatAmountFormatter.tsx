@@ -6,7 +6,7 @@ import { selectCoins } from '@suite-common/wallet-core';
 import { selectFiatCurrency } from '@suite-native/module-settings';
 import { toFiatCurrency } from '@suite-common/wallet-utils';
 import { useFormatters } from '@suite-common/formatters';
-import { EthereumTokenSymbol } from '@suite-native/ethereum-tokens';
+import { convertTokenValueToDecimal, EthereumTokenSymbol } from '@suite-native/ethereum-tokens';
 
 import { FormatterProps } from '../types';
 import { EmptyAmountText } from './EmptyAmountText';
@@ -34,10 +34,9 @@ export const TokenToFiatAmountFormatter = ({
 
     if (!rates) return <EmptyAmountText />;
 
-    const shiftedValue = Number(value) / 10 ** decimals;
-    const amount = toFiatCurrency(shiftedValue.toString(), fiatCurrency.label, rates, 2);
-
-    const formattedFiatValue = FiatAmountFormatter.format(amount ?? 0);
+    const decimalValue = convertTokenValueToDecimal(value, decimals);
+    const fiatValue = toFiatCurrency(decimalValue.toString(), fiatCurrency.label, rates, 2);
+    const formattedFiatValue = FiatAmountFormatter.format(fiatValue ?? 0);
 
     return <AmountText value={formattedFiatValue} isDiscreetText={isDiscreetText} {...rest} />;
 };

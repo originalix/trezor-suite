@@ -3,12 +3,12 @@ import { SectionList } from 'react-native';
 import { useSelector } from 'react-redux';
 
 import { useNativeStyles, prepareNativeStyle } from '@trezor/styles';
-import { AccountKey, WalletAccountTransaction } from '@suite-common/wallet-types';
+import { AccountKey } from '@suite-common/wallet-types';
 import { groupTransactionsByDate, MonthKey } from '@suite-common/wallet-utils';
 import { selectIsLoadingTransactions } from '@suite-common/wallet-core';
 import { Box, Loader } from '@suite-native/atoms';
 import { TAB_BAR_HEIGHT } from '@suite-native/navigation';
-import { EthereumTokenSymbol } from '@suite-native/ethereum-tokens';
+import { EthereumTokenSymbol, WalletAccountTransaction } from '@suite-native/ethereum-tokens';
 
 import { TransactionListGroupTitle } from './TransactionListGroupTitle';
 import { TransactionListItem } from './TransactionListItem';
@@ -62,9 +62,7 @@ const renderTokenTransferItem = ({
     accountKey,
     tokenSymbol,
 }: RenderTokenTranferItemParams) => {
-    const tokenTransfers = item.tokens.filter(
-        token => token.symbol.toLowerCase() === tokenSymbol.toLowerCase(),
-    );
+    const tokenTransfers = item.tokens.filter(token => token.symbol === tokenSymbol);
 
     return (
         <>
@@ -109,7 +107,10 @@ export const TransactionList = ({
     const { applyStyle } = useNativeStyles();
     const isLoadingTransactions = useSelector(selectIsLoadingTransactions);
     const accountTransactionsByMonth = useMemo(
-        () => groupTransactionsByDate(transactions, 'month'),
+        () =>
+            groupTransactionsByDate(transactions, 'month') as {
+                [key: string]: WalletAccountTransaction[];
+            },
         [transactions],
     );
 
