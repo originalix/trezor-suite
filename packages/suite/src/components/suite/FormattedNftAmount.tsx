@@ -21,7 +21,7 @@ const Symbol = styled.div`
     max-width: 120px;
 `;
 
-const ID = styled.span`
+const Id = styled.span`
     white-space: nowrap;
 `;
 
@@ -68,17 +68,16 @@ export const FormattedNftAmount = ({
     return (
         <HiddenPlaceholder>
             <Container className={className}>
-                {!!signValue && <Sign value={signValue} />}
-
-                <ID>ID&nbsp;</ID>
-
+                {signValue ? <Sign value={signValue} /> : null}
+                <Id>ID</Id>
+                &nbsp;
                 {useLink ? (
                     <StyledTrezorLink href={explorerUrl}>{id}</StyledTrezorLink>
                 ) : (
                     <NoLink>{id}</NoLink>
                 )}
-
-                <Symbol>&nbsp;{transfer.symbol}</Symbol>
+                &nbsp;
+                <Symbol>{transfer.symbol}</Symbol>
             </Container>
         </HiddenPlaceholder>
     );
