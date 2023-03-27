@@ -5195,9 +5195,13 @@ export default defineMessages({
         id: 'TR_CUSTOM_HOMESCREEN',
         defaultMessage: 'Custom homescreen uploaded',
     },
-    IMAGE_VALIDATION_ERROR_INVALID_FORMAT: {
-        id: 'IMAGE_VALIDATION_ERROR_INVALID_FORMAT',
+    IMAGE_VALIDATION_ERROR_INVALID_FORMAT_ONLY_PNG_JPG: {
+        id: 'IMAGE_VALIDATION_ERROR_INVALID_FORMAT_ONLY_PNG_JPG',
         defaultMessage: 'Invalid file selected. Must be .jpg or .png',
+    },
+    IMAGE_VALIDATION_ERROR_INVALID_FORMAT_ONLY_JPG: {
+        id: 'IMAGE_VALIDATION_ERROR_INVALID_FORMAT_ONLY_JPG',
+        defaultMessage: 'Invalid file selected. Must be .jpg',
     },
     IMAGE_VALIDATION_ERROR_INVALID_HEIGHT: {
         id: 'IMAGE_VALIDATION_ERROR_INVALID_HEIGHT',

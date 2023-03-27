@@ -5,11 +5,12 @@ export const deviceModelInformation = {
     [DeviceModel.T1]: { width: 128, height: 64, supports: ['.png', '.jpeg'] },
     [DeviceModel.TT]: { width: 240, height: 240, supports: ['.jpeg'] },
     [DeviceModel.TR]: { width: 128, height: 64, supports: ['.png', '.jpeg'] },
-    [DeviceModel.UNKNOWN]: { width: 0, height: 0, supports: [] },
+    [DeviceModel.UNKNOWN]: { width: 0, height: 0, supports: [] as string[] },
 };
 
 export const enum ImageValidationError {
-    InvalidFormat = 'IMAGE_VALIDATION_ERROR_INVALID_FORMAT',
+    InvalidFormatOnlyPngJpg = 'IMAGE_VALIDATION_ERROR_INVALID_FORMAT_ONLY_PNG_JPG',
+    InvalidFormatOnlyJpg = 'IMAGE_VALIDATION_ERROR_INVALID_FORMAT_ONLY_JPG',
     InvalidHeight = 'IMAGE_VALIDATION_ERROR_INVALID_HEIGHT',
     InvalidWidth = 'IMAGE_VALIDATION_ERROR_INVALID_WIDTH',
     InvalidSize = 'IMAGE_VALIDATION_ERROR_INVALID_SIZE',
@@ -180,7 +181,12 @@ export const validateImage = async (file: File, deviceModel: DeviceModel) => {
     const image = await dataUrlToImage(dataUrl);
 
     if (!isValidImageFormat(dataUrl, deviceModel)) {
-        return ImageValidationError.InvalidFormat;
+        const { supports } = deviceModelInformation[deviceModel];
+
+        if (supports.includes('.png') && supports.includes('.jpeg')) {
+            return ImageValidationError.InvalidFormatOnlyPngJpg;
+        }
+        return ImageValidationError.InvalidFormatOnlyJpg;
     }
     if (!isValidImageWidth(image, deviceModel)) {
         return ImageValidationError.InvalidWidth;
