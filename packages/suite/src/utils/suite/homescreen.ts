@@ -2,9 +2,9 @@
 import { DeviceModel } from '@trezor/device-utils';
 
 export const deviceModelInformation = {
-    [DeviceModel.T1]: { width: 128, height: 64, supports: ['.png', '.jpeg'] },
-    [DeviceModel.TT]: { width: 240, height: 240, supports: ['.jpeg'] },
-    [DeviceModel.TR]: { width: 128, height: 64, supports: ['.png', '.jpeg'] },
+    [DeviceModel.T1]: { width: 128, height: 64, supports: ['png', 'jpeg'] },
+    [DeviceModel.TT]: { width: 240, height: 240, supports: ['jpeg'] },
+    [DeviceModel.TR]: { width: 128, height: 64, supports: ['png', 'jpeg'] },
     [DeviceModel.UNKNOWN]: { width: 0, height: 0, supports: [] as string[] },
 };
 
@@ -102,9 +102,7 @@ export const imageToImageData = (image: HTMLImageElement, deviceModel: DeviceMod
 };
 
 export const isValidImageFormat = (dataUrl: string, deviceModel: DeviceModel) => {
-    const supportedFormats = deviceModelInformation[deviceModel].supports
-        .join('|')
-        .replaceAll('.', '');
+    const supportedFormats = deviceModelInformation[deviceModel].supports.join('|');
     const supportedDataUrlRE = new RegExp(`data:image/(${supportedFormats})`);
 
     return !!dataUrl && supportedDataUrlRE.test(dataUrl);
@@ -183,7 +181,7 @@ export const validateImage = async (file: File, deviceModel: DeviceModel) => {
     if (!isValidImageFormat(dataUrl, deviceModel)) {
         const { supports } = deviceModelInformation[deviceModel];
 
-        if (supports.includes('.png') && supports.includes('.jpeg')) {
+        if (supports.includes('png') && supports.includes('jpeg')) {
             return ImageValidationError.InvalidFormatOnlyPngJpg;
         }
         return ImageValidationError.InvalidFormatOnlyJpg;

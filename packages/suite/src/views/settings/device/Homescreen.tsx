@@ -142,7 +142,9 @@ export const Homescreen = ({ isDeviceLocked }: HomescreenProps) => {
                     <HiddenInput
                         ref={fileInputElement}
                         type="file"
-                        accept={deviceModelInformation[deviceModel].supports.join(', ')}
+                        accept={deviceModelInformation[deviceModel].supports
+                            .map(format => `image/${format}`)
+                            .join(', ')}
                         onChange={e => onUploadHomescreen(e.target.files)}
                     />
                     <Tooltip
@@ -222,7 +224,10 @@ export const Homescreen = ({ isDeviceLocked }: HomescreenProps) => {
                         }
                     />
 
-                    {validationError !== ImageValidationError.InvalidFormat && (
+                    {![
+                        ImageValidationError.InvalidFormatOnlyJpg,
+                        ImageValidationError.InvalidFormatOnlyPngJpg,
+                    ].includes(validationError) && (
                         <Col>
                             <img
                                 width={`${deviceModelInformation[deviceModel].width}px`}
