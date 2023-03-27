@@ -203,23 +203,23 @@ export const validateImage = async (file: File, deviceModel: DeviceModel) => {
 export const imagePathToHex = async (imagePath: string, deviceModel: DeviceModel) => {
     const response = await fetch(imagePath);
 
-    let hex;
+    // image can be loaded to device without modifications -> it is in original quality
     if (deviceModel === DeviceModel.TT) {
-        // original quality
         const arrayBuffer = await response.arrayBuffer();
 
-        hex = Buffer.from(arrayBuffer).toString('hex');
-    } else {
-        // decreased quality
-        const blob = await response.blob();
-
-        const element = await dataUrlToImage(URL.createObjectURL(blob));
-
-        const { canvas, ctx } = imageToCanvas(element, deviceModel);
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-
-        hex = toig(imageData, deviceModel);
+        return Buffer.from(arrayBuffer).toString('hex');
     }
 
-    return hex;
+    /* 
+    - Image has to be modified by 'toig' method
+    - However, this method accepts the Canvas format which changes the quality of image
+    */
+    const blob = await response.blob();
+
+    const element = await dataUrlToImage(URL.createObjectURL(blob));
+
+    const { canvas, ctx } = imageToCanvas(element, deviceModel);
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+    return toig(imageData, deviceModel);
 };
