@@ -219,7 +219,13 @@ export const Homescreen = ({ isDeviceLocked }: HomescreenProps) => {
                         title={<Translation id="TR_CUSTOM_HOMESCREEN" />}
                         description={
                             <ValidationMessage>
-                                <Translation id={validationError} />
+                                <Translation
+                                    id={validationError}
+                                    values={{
+                                        width: deviceModelInformation[deviceModel].width,
+                                        height: deviceModelInformation[deviceModel].height,
+                                    }}
+                                />
                             </ValidationMessage>
                         }
                     />

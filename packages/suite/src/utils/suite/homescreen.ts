@@ -11,8 +11,7 @@ export const deviceModelInformation = {
 export const enum ImageValidationError {
     InvalidFormatOnlyPngJpg = 'IMAGE_VALIDATION_ERROR_INVALID_FORMAT_ONLY_PNG_JPG',
     InvalidFormatOnlyJpg = 'IMAGE_VALIDATION_ERROR_INVALID_FORMAT_ONLY_JPG',
-    InvalidHeight = 'IMAGE_VALIDATION_ERROR_INVALID_HEIGHT',
-    InvalidWidth = 'IMAGE_VALIDATION_ERROR_INVALID_WIDTH',
+    InvalidDimensions = 'IMAGE_VALIDATION_ERROR_INVALID_DIMENSIONS',
     InvalidSize = 'IMAGE_VALIDATION_ERROR_INVALID_SIZE',
     ProgressiveJpgFormat = 'IMAGE_VALIDATION_ERROR_PROGRESSIVE_JPG',
     UnexpectedAlpha = 'IMAGE_VALIDATION_ERROR_UNEXPECTED_ALPHA',
@@ -186,11 +185,8 @@ export const validateImage = async (file: File, deviceModel: DeviceModel) => {
         }
         return ImageValidationError.InvalidFormatOnlyJpg;
     }
-    if (!isValidImageWidth(image, deviceModel)) {
-        return ImageValidationError.InvalidWidth;
-    }
-    if (!isValidImageHeight(image, deviceModel)) {
-        return ImageValidationError.InvalidHeight;
+    if (!isValidImageWidth(image, deviceModel) || !isValidImageHeight(image, deviceModel)) {
+        return ImageValidationError.InvalidDimensions;
     }
     if (isProgressiveJPG(arrayBuffer, deviceModel)) {
         return ImageValidationError.ProgressiveJpgFormat;

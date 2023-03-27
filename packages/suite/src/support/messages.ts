@@ -5203,17 +5203,13 @@ export default defineMessages({
         id: 'IMAGE_VALIDATION_ERROR_INVALID_FORMAT_ONLY_JPG',
         defaultMessage: 'Invalid file selected. Must be .jpg',
     },
-    IMAGE_VALIDATION_ERROR_INVALID_HEIGHT: {
-        id: 'IMAGE_VALIDATION_ERROR_INVALID_HEIGHT',
-        defaultMessage: 'Invalid height.',
-    },
-    IMAGE_VALIDATION_ERROR_INVALID_WIDTH: {
-        id: 'IMAGE_VALIDATION_ERROR_INVALID_WIDTH',
-        defaultMessage: 'Invalid width.',
+    IMAGE_VALIDATION_ERROR_INVALID_DIMENSIONS: {
+        id: 'IMAGE_VALIDATION_ERROR_INVALID_DIMENSIONS',
+        defaultMessage: 'Invalid dimensions (Image must be {width} x {height} px)',
     },
     IMAGE_VALIDATION_ERROR_INVALID_SIZE: {
-        id: 'IMAGE_VALIDATION_ERROR_INVALID_SIZE',
-        defaultMessage: 'Invalid size.',
+        id: 'IMAGE_VALIDATION_ERROR_INVALID_SIZE_JPG',
+        defaultMessage: 'Invalid size (Image must be less than 16kb)',
     },
     IMAGE_VALIDATION_ERROR_PROGRESSIVE_JPG: {
         id: 'IMAGE_VALIDATION_ERROR_PROGRESSIVE_JPG',
