@@ -6,11 +6,12 @@ import { selectCoins } from '@suite-common/wallet-core';
 import { selectFiatCurrency } from '@suite-native/module-settings';
 import { toFiatCurrency } from '@suite-common/wallet-utils';
 import { useFormatters } from '@suite-common/formatters';
-import { convertTokenValueToDecimal, EthereumTokenSymbol } from '@suite-native/ethereum-tokens';
+import { EthereumTokenSymbol } from '@suite-native/ethereum-tokens';
 
 import { FormatterProps } from '../types';
 import { EmptyAmountText } from './EmptyAmountText';
 import { AmountText } from './AmountText';
+import { convertTokenValueToDecimal } from '../utils';
 
 type EthereumTokenToFiatAmountFormatterProps = {
     ethereumToken: EthereumTokenSymbol;
@@ -19,7 +20,7 @@ type EthereumTokenToFiatAmountFormatterProps = {
 } & FormatterProps<number | string> &
     TextProps;
 
-export const TokenToFiatAmountFormatter = ({
+export const EthereumTokenToFiatAmountFormatter = ({
     value,
     ethereumToken,
     isDiscreetText = true,

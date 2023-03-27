@@ -7,6 +7,3 @@ export const isEthereumAccountSymbol = (symbol: NetworkSymbol) => symbol === 'et
 
 export const getEthereumTokenIconName = (symbol: EthereumTokenSymbol) =>
     (symbol in ethereumTokenIcons ? symbol : 'erc20') as EthereumTokenIconName;
-
-export const convertTokenValueToDecimal = (value: string | number, decimals: number) =>
-    Number(value) / 10 ** decimals;

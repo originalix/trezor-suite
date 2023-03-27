@@ -3,7 +3,10 @@ import { TouchableOpacity } from 'react-native';
 
 import { Box, Text } from '@suite-native/atoms';
 import { EthereumTokenIcon } from '@trezor/icons';
-import { EthereumTokenAmountFormatter, TokenToFiatAmountFormatter } from '@suite-native/formatters';
+import {
+    EthereumTokenAmountFormatter,
+    EthereumTokenToFiatAmountFormatter,
+} from '@suite-native/formatters';
 import { EthereumTokenSymbol, getEthereumTokenIconName } from '@suite-native/ethereum-tokens';
 import { prepareNativeStyle, useNativeStyles } from '@trezor/styles';
 import { AccountKey } from '@suite-common/wallet-types';
@@ -70,7 +73,10 @@ export const TokenListItem = ({
                         <Text>{label}</Text>
                     </Box>
                     <Box alignItems="flex-end">
-                        <TokenToFiatAmountFormatter value={balance} ethereumToken={symbol} />
+                        <EthereumTokenToFiatAmountFormatter
+                            value={balance}
+                            ethereumToken={symbol}
+                        />
                         <EthereumTokenAmountFormatter value={balance} ethereumToken={symbol} />
                     </Box>
                 </Box>

@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 
 import { AccountKey } from '@suite-common/wallet-types';
 import { EthereumTokenTransfer } from '@suite-native/ethereum-tokens';
-import { EthereumTokenAmountFormatter, TokenToFiatAmountFormatter } from '@suite-native/formatters';
+import { EthereumTokenAmountFormatter, EthereumTokenToFiatAmountFormatter } from '@suite-native/formatters';
 
 import { TransactionListItemContainer } from './TransactionListItemContainer';
 
@@ -27,7 +27,7 @@ export const TokenTransferListItem = memo(
                 isFirst={isFirst}
                 isLast={isLast}
             >
-                <TokenToFiatAmountFormatter
+                <EthereumTokenToFiatAmountFormatter
                     value={tokenTransfer.amount}
                     ethereumToken={tokenSymbol}
                     decimals={tokenTransfer.decimals}

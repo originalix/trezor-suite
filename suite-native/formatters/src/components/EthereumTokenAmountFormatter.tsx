@@ -1,12 +1,13 @@
 import React from 'react';
 
 import { Box, Text, TextProps } from '@suite-native/atoms';
-import { EthereumTokenSymbol, convertTokenValueToDecimal } from '@suite-native/ethereum-tokens';
+import { EthereumTokenSymbol } from '@suite-native/ethereum-tokens';
 import { localizeNumber } from '@suite-common/wallet-utils';
 
 import { FormatterProps } from '../types';
 import { EthereumTokenSymbolFormatter } from './EthereumTokenSymbolFormatter';
 import { AmountText } from './AmountText';
+import { convertTokenValueToDecimal } from '../utils';
 
 type EthereumTokenAmountFormatterProps = {
     ethereumToken: EthereumTokenSymbol;
