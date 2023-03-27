@@ -397,8 +397,10 @@ interface IODetailsProps {
 
 // Not ready for Cardano tokens, they will not be visible, probably
 export const IODetails = ({ tx }: IODetailsProps) => {
-    const balanceBasedNetworks = ['eth', 'etc', 'trop', 'tgor'];
-    if (balanceBasedNetworks.includes(tx.symbol)) {
+    const { selectedAccount } = useSelector(state => state.wallet);
+    const { network } = selectedAccount;
+
+    if (network?.networkType === 'ethereum') {
         return (
             <Wrapper>
                 <AnalyzeInBlockbookBanner txid={tx.txid} />
