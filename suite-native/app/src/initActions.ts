@@ -3,7 +3,8 @@ import { Alert } from 'react-native';
 import { createThunk } from '@suite-common/redux-utils';
 import { connectInitThunk } from '@suite-common/connect-init';
 import { initBlockchainThunk, reconnectBlockchainThunk } from '@suite-common/wallet-core';
-import { enabledNetworks } from '@suite-native/config';
+import { initMessageSystemThunk } from '@suite-common/message-system';
+import { enabledNetworks, getJWSPublicKey } from '@suite-native/config';
 import { initAnalyticsThunk } from '@suite-native/analytics';
 
 import { setIsAppReady, setIsConnectInitialized } from '../../state/src/appSlice';
@@ -17,6 +18,8 @@ export const applicationInit = createThunk(`@app/init-actions`, async (_, { disp
 
     try {
         dispatch(initAnalyticsThunk());
+
+        dispatch(initMessageSystemThunk({ jwsPublicKey: getJWSPublicKey() }));
 
         await dispatch(connectInitThunk()).unwrap();
 

@@ -6,7 +6,7 @@ import { resolveStaticPath } from '@trezor/utils';
  */
 export const FETCH_INTERVAL = 60_000; // 1 minute in milliseconds
 export const FETCH_CHECK_INTERVAL = 30_000;
-export const FETCH_TIMEOUT = 8_000;
+export const FETCH_TIMEOUT = 30_000;
 
 /*
  * Bump version in case the new version of message system is not backward compatible.

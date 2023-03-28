@@ -7193,6 +7193,7 @@ __metadata:
     "@reduxjs/toolkit": 1.9.2
     "@suite-common/analytics": "workspace:*"
     "@suite-common/logger": "workspace:*"
+    "@suite-common/message-system": "workspace:*"
     "@suite-common/redux-utils": "workspace:*"
     "@suite-common/test-utils": "workspace:*"
     "@suite-common/toast-notifications": "workspace:*"
@@ -8102,6 +8103,7 @@ __metadata:
     "@shopify/react-native-skia": 0.1.173
     "@suite-common/connect-init": "workspace:*"
     "@suite-common/formatters": "workspace:*"
+    "@suite-common/message-system": "workspace:*"
     "@suite-common/redux-utils": "workspace:*"
     "@suite-common/wallet-core": "workspace:*"
     "@suite-native/analytics": "workspace:*"
