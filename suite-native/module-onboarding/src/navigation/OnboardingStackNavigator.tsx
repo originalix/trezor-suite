@@ -8,7 +8,7 @@ import {
     stackNavigationOptionsConfig,
 } from '@suite-native/navigation';
 
-import { AppIntroScreen } from '../screens/AppIntroScreen';
+import { WelcomeScreen } from '../screens/WelcomeScreen';
 import { TrackBalancesScreen } from '../screens/TrackBalancesScreen';
 import { ReceiveCoins } from '../screens/ReceiveCoins';
 import { AnalyticsConsentScreen } from '../screens/AnalyticsConsentScreen';
@@ -21,7 +21,7 @@ export const OnboardingStackNavigator = () => (
         initialRouteName={OnboardingStackRoutes.Welcome}
         screenOptions={stackNavigationOptionsConfig}
     >
-        <OnboardingStack.Screen name={OnboardingStackRoutes.Welcome} component={AppIntroScreen} />
+        <OnboardingStack.Screen name={OnboardingStackRoutes.Welcome} component={WelcomeScreen} />
         <OnboardingStack.Screen
             name={OnboardingStackRoutes.TrackBalances}
             component={TrackBalancesScreen}

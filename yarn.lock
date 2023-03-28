@@ -7251,6 +7251,7 @@ __metadata:
     "@suite-native/navigation": "workspace:*"
     "@trezor/icons": "workspace:*"
     "@trezor/styles": "workspace:*"
+    "@trezor/theme": "workspace:*"
     react: 18.2.0
     react-native: 0.71.4
     react-redux: 8.0.5
