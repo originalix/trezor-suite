@@ -1,25 +1,19 @@
 import React from 'react';
-import { Image } from 'react-native';
 
 import {
     OnboardingStackParamList,
     OnboardingStackRoutes,
     StackProps,
 } from '@suite-native/navigation';
-import { Box } from '@suite-native/atoms';
-import { prepareNativeStyle, useNativeStyles } from '@trezor/styles';
+import { Box, Image } from '@suite-native/atoms';
 
 import { GetTrezor } from '../components/GetTrezor';
 import { OnboardingScreen } from '../components/OnboardingScreen';
 import { GetTrezorButton } from '../components/GetTrezorButton';
 
-const imageStyle = prepareNativeStyle(() => ({ width: 245, height: 112 }));
-
 export const ReceiveCoins = ({
     navigation,
 }: StackProps<OnboardingStackParamList, OnboardingStackRoutes.ReceiveCoins>) => {
-    const { applyStyle } = useNativeStyles();
-
     const handleRedirect = () => {
         navigation.navigate(OnboardingStackRoutes.AnalyticsConsent);
     };
@@ -32,11 +26,12 @@ export const ReceiveCoins = ({
         >
             <Box alignItems="center">
                 {/* eslint-disable-next-line global-require */}
-                <Image source={require('../assets/coins.png')} style={applyStyle(imageStyle)} />
+                <Image source={require('../assets/coins.png')} width={245} height={112} />
                 <Image
                     // eslint-disable-next-line global-require
                     source={require('../assets/downloadQr.png')}
-                    style={{ width: 104, height: 104 }}
+                    width={104}
+                    height={104}
                 />
             </Box>
             <GetTrezor>

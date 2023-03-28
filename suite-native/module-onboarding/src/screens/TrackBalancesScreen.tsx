@@ -1,25 +1,19 @@
 import React from 'react';
-import { Image } from 'react-native';
 
 import {
     OnboardingStackParamList,
     OnboardingStackRoutes,
     StackProps,
 } from '@suite-native/navigation';
-import { prepareNativeStyle, useNativeStyles } from '@trezor/styles';
-import { Box } from '@suite-native/atoms';
+import { Box, Image } from '@suite-native/atoms';
 
 import { GetTrezor } from '../components/GetTrezor';
 import { OnboardingScreen } from '../components/OnboardingScreen';
 import { GetTrezorButton } from '../components/GetTrezorButton';
 
-const imageStyle = prepareNativeStyle(() => ({ width: 320, height: 276 }));
-
 export const TrackBalancesScreen = ({
     navigation,
 }: StackProps<OnboardingStackParamList, OnboardingStackRoutes.TrackBalances>) => {
-    const { applyStyle } = useNativeStyles();
-
     const handleRedirect = () => {
         navigation.navigate(OnboardingStackRoutes.ReceiveCoins);
     };
@@ -32,7 +26,7 @@ export const TrackBalancesScreen = ({
         >
             <Box justifyContent="space-between">
                 {/* eslint-disable-next-line global-require */}
-                <Image source={require('../assets/portfolio.png')} style={applyStyle(imageStyle)} />
+                <Image source={require('../assets/portfolio.png')} width={320} height={276} />
                 <GetTrezor>
                     <GetTrezorButton redirectTarget={handleRedirect} />
                 </GetTrezor>

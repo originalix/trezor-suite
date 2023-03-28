@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Stack, Text } from '@suite-native/atoms';
+import { Box, Stack, Text, Image } from '@suite-native/atoms';
 import {
     OnboardingStackParamList,
     OnboardingStackRoutes,
@@ -29,16 +29,24 @@ export const AppIntroScreen = ({
 
     return (
         <Screen>
-            <Stack alignItems="center" justifyContent="center" spacing="extraLarge">
-                <Icon size="large" name="trezor" color="backgroundPrimaryDefault" />
-                <Text variant="titleMedium" style={applyStyle(titleStyle)}>
-                    Welcome to Trezor Suite Lite
-                </Text>
-                <Text color="textSubdued">Simple and secure portfolio tracker</Text>
-            </Stack>
-            <GetTrezor>
-                <GetTrezorButton redirectTarget={handleRedirect} />
-            </GetTrezor>
+            <Box justifyContent="space-between">
+                <Image
+                    // eslint-disable-next-line global-require
+                    source={require('../assets/rectangles.png')}
+                    width={200}
+                    height={200}
+                />
+                <Stack alignItems="center" justifyContent="center" spacing="extraLarge">
+                    <Icon size="large" name="trezor" color="backgroundPrimaryDefault" />
+                    <Text variant="titleMedium" style={applyStyle(titleStyle)}>
+                        Welcome to Trezor Suite Lite
+                    </Text>
+                    <Text color="textSubdued">Simple and secure portfolio tracker</Text>
+                </Stack>
+                <GetTrezor>
+                    <GetTrezorButton redirectTarget={handleRedirect} />
+                </GetTrezor>
+            </Box>
         </Screen>
     );
 };

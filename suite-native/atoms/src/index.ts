@@ -5,6 +5,7 @@ export * from './Box';
 export * from './Hint';
 export * from './Radio';
 export * from './NumPadButton';
+export * from './Image';
 export * from './Input/InputWrapper';
 export * from './Input/SearchInput';
 export * from './Input/Input';

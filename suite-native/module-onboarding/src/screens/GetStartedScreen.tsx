@@ -1,5 +1,4 @@
 import React from 'react';
-import { Image } from 'react-native';
 
 import {
     AccountsImportStackRoutes,
@@ -9,14 +8,11 @@ import {
     RootStackRoutes,
     StackToTabCompositeScreenProps,
 } from '@suite-native/navigation';
-import { prepareNativeStyle, useNativeStyles } from '@trezor/styles';
-import { Alert } from '@suite-native/atoms';
+import { Alert, Image } from '@suite-native/atoms';
 
 import { GetTrezor } from '../components/GetTrezor';
 import { OnboardingScreen } from '../components/OnboardingScreen';
 import { GetTrezorButton } from '../components/GetTrezorButton';
-
-const imageStyle = prepareNativeStyle(() => ({ width: 320, height: 276 }));
 
 type NavigationProps = StackToTabCompositeScreenProps<
     OnboardingStackParamList,
@@ -25,8 +21,6 @@ type NavigationProps = StackToTabCompositeScreenProps<
 >;
 
 export const GetStartedScreen = ({ navigation }: NavigationProps) => {
-    const { applyStyle } = useNativeStyles();
-
     const handleRedirect = () => {
         navigation.navigate(RootStackRoutes.AccountsImport, {
             screen: AccountsImportStackRoutes.SelectNetwork,
@@ -41,7 +35,7 @@ export const GetStartedScreen = ({ navigation }: NavigationProps) => {
         >
             <>
                 {/* eslint-disable-next-line global-require */}
-                <Image source={require('../assets/dashboard.png')} style={applyStyle(imageStyle)} />
+                <Image source={require('../assets/dashboard.png')} width={320} height={276} />
 
                 <Alert title="This requires your Trezor hardware wallet and access to the Trezor Suite desktop app." />
 
