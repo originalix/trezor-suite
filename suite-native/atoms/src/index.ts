@@ -1,4 +1,5 @@
 export * from './AccordionItem';
+export * from './Alert';
 export * from './Text';
 export * from './Box';
 export * from './Hint';

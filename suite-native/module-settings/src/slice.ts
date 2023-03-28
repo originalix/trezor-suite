@@ -5,6 +5,7 @@ import { fiatCurrencies, FiatCurrency, FiatCurrencyCode } from '@suite-common/su
 
 export interface AppSettingsState {
     isOnboardingFinished: boolean;
+    isAppIntroFinished: boolean;
     fiatCurrency: FiatCurrency;
     bitcoinUnits: PROTO.AmountUnit;
 }
@@ -17,10 +18,12 @@ export const appSettingsInitialState: AppSettingsState = {
     fiatCurrency: fiatCurrencies.usd,
     isOnboardingFinished: false,
     bitcoinUnits: PROTO.AmountUnit.BITCOIN,
+    isAppIntroFinished: false,
 };
 
 export const appSettingsPersistWhitelist: Array<keyof AppSettingsState> = [
     'isOnboardingFinished',
+    'isAppIntroFinished',
     'fiatCurrency',
     'bitcoinUnits',
 ];
@@ -32,7 +35,10 @@ export const appSettingsSlice = createSlice({
         setFiatCurrency: (state, { payload }: PayloadAction<FiatCurrencyCode>) => {
             state.fiatCurrency = fiatCurrencies[payload];
         },
-        setOnboardingFinished: (state, action: PayloadAction<boolean>) => {
+        setIsOnboardingFinished: (state, action: PayloadAction<boolean>) => {
+            state.isOnboardingFinished = action.payload;
+        },
+        setIsAppIntroFinished: (state, action: PayloadAction<boolean>) => {
             state.isOnboardingFinished = action.payload;
         },
         setBitcoinUnits: (state, { payload }: PayloadAction<PROTO.AmountUnit>) => {
@@ -47,6 +53,9 @@ export const selectFiatCurrencyCode = (state: SettingsSliceRootState) =>
 export const selectIsOnboardingFinished = (state: SettingsSliceRootState) =>
     state.appSettings.isOnboardingFinished;
 export const selectBitcoinUnits = (state: SettingsSliceRootState) => state.appSettings.bitcoinUnits;
+export const selectIsAppIntroFinished = (state: SettingsSliceRootState) =>
+    state.appSettings.isAppIntroFinished;
 
-export const { setOnboardingFinished, setFiatCurrency, setBitcoinUnits } = appSettingsSlice.actions;
+export const { setIsOnboardingFinished, setFiatCurrency, setIsAppIntroFinished, setBitcoinUnits } =
+    appSettingsSlice.actions;
 export const appSettingsReducer = appSettingsSlice.reducer;
